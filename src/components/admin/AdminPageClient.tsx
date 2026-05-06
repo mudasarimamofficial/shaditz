@@ -10,7 +10,7 @@ import { AdminShell } from "@/components/admin/AdminShell";
 import { LeadsPanel } from "@/components/admin/LeadsPanel";
 import { CustomCodePanel } from "@/components/admin/CustomCodePanel";
 import { HomepagePanel } from "@/components/admin/HomepagePanel";
-import { VisualBuilderPanel } from "@/components/admin/VisualBuilderPanel";
+import { ShaditzVisualBuilderPanel } from "@/components/admin/ShaditzVisualBuilderPanel";
 import { SettingsPanel } from "@/components/admin/SettingsPanel";
 import { PagesPanel } from "@/components/admin/pages/PagesPanel";
 import { MediaPanel } from "@/components/admin/MediaPanel";
@@ -278,7 +278,7 @@ export function AdminPageClient({ initialTab = "builder" }: Props) {
       }}
     >
       {tab === "builder" ? (
-        <VisualBuilderPanel
+        <ShaditzVisualBuilderPanel
           supabase={supabase}
           onNavigateTab={setTab}
           onSignOut={async () => {

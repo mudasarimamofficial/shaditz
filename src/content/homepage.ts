@@ -1,6 +1,8 @@
 import { createDefaultTypographyScale, type TypographyScale } from "@/utils/typographyScale";
+import { shaditzLandingDefaults, type ShaditzLandingContent } from "@/content/shaditzLanding";
 
 export type HomepageContent = {
+  shaditz?: ShaditzLandingContent;
   branding?: {
     enabled?: boolean;
     colors: {
@@ -138,6 +140,13 @@ export type HomepageContent = {
       id: string;
       type:
         | "hero"
+        | "nav"
+        | "showreel"
+        | "services"
+        | "portfolio"
+        | "tools"
+        | "process"
+        | "contact"
         | "trust_strip"
         | "founder"
         | "promise"
@@ -280,6 +289,7 @@ export type HomepageContent = {
 };
 
 export const homepageDefaults: HomepageContent = {
+  shaditz: shaditzLandingDefaults,
   branding: {
     enabled: false,
     colors: {
@@ -437,7 +447,7 @@ export const homepageDefaults: HomepageContent = {
     },
   ],
   whatsapp: {
-    enabled: true,
+    enabled: false,
     phone: "+923191106310",
     message: "Hi, I want to learn more about your services",
     tooltip: "Chat with us!",
@@ -449,116 +459,19 @@ export const homepageDefaults: HomepageContent = {
     delayMs: 1200,
     autoOpen: false,
   },
-  rebuilt: {
-    hero: {
-      tag: "Client Acquisition For Masculinity Coaches",
-      headlineLine1: "Stop Guessing.",
-      headlineLine2Prefix: "Start ",
-      headlineHighlight: "Closing.",
-      subcopyBeforeStrong: "You've built a real coaching business. ",
-      subcopyStrong: "Your calendar shouldn't depend on content going viral or a referral showing up.",
-      subcopyAfterStrong: " We install a system that fills it — month after month, without ads.",
-      note: "Applications reviewed personally. No automated responses.",
-    },
-    trustStrip: {
-      items: [
-        "Fit-first — we turn away wrong clients",
-        "Human outreach — no bots, no spam",
-        "Brand-safe — your reputation is protected",
-        "Weekly optimisation — the system improves every month",
-        "No lock-in contracts",
-      ],
-    },
-    founder: {
-      label: "Who Is Behind This",
-      avatarText: "H",
-      name: "Hamza",
-      title: "Founder, Shaditz · Masculinity Coach",
-      quote: `"I didn't build this for coaches. I built it because I was one."`,
-      paragraphs: [
-        "I spent years in the masculinity coaching space — developing men, running programmes, trying to figure out how to fill my calendar without becoming a content machine. I know the frustration of having a life-changing offer and not being able to get it in front of the right men consistently.",
-        "Most client acquisition agencies <strong>have never coached anyone.</strong> They sell outreach systems built for SaaS companies and slap them onto coaches. It doesn't work — because they don't understand the buyer, the conversation, or what it takes to earn trust with men who are already sceptical.",
-        "Shaditz is built differently. Every system, every message, every piece of outreach is designed specifically for masculinity coaches — because I know your world from the inside.",
-        "<strong>That's not a marketing line. That's why this works.</strong>",
-      ],
-    },
-    promise: {
-      tag: "What You're Actually Getting",
-      heading: "Four Things We Stand Behind",
-      subcopy: "Not features. Not deliverables. Commitments — the things that make working with us feel different from day one.",
-      cards: [
-        {
-          title: "We protect your brand like it's ours",
-          body: "Every message we send goes out under your name. We write with your voice, your standards, and your reputation on the line. We would never send anything we wouldn't be proud to sign ourselves.",
-        },
-        {
-          title: "No vanity metrics. Booked calls or nothing.",
-          body: "We don't report follower growth, impressions, or reply rates. The only number that matters is qualified calls booked onto your calendar. That's the only thing we optimise for.",
-        },
-        {
-          title: "You'll know exactly what's happening, always",
-          body: "Real-time pipeline visibility. Weekly reporting. No black boxes. If something isn't working, we tell you before you ask — and we show you what we're changing.",
-        },
-        {
-          title: "We only work with coaches we can genuinely help",
-          body: "Every application is reviewed personally. If your offer, audience, or stage isn't right for our system, we'll tell you honestly — and point you toward what will actually work for you right now.",
-        },
-      ],
-    },
-    how: {
-      tag: "The Framework",
-      heading: "How We Fill Your Calendar",
-      subcopy: "Five steps. No shortcuts. Built to compound — the longer you run it, the stronger it gets.",
-      steps: [
-        {
-          title: "Offer and niche calibration",
-          body: "We start by deeply auditing your offer and defining exactly who you're for. Not a broad ICA exercise — a precise, signal-based definition of the man your programme transforms. Every message we write for you starts here.",
-        },
-        {
-          title: "Targeted prospect database build",
-          body: "We build a hyper-targeted list using behavioural and interest signals — men who are actively searching for the transformation you provide. Quality over volume at every stage. A smaller, better list outperforms a large, cold one every time.",
-        },
-        {
-          title: "Strategic multi-channel outreach",
-          body: "Personalised outreach across Instagram, LinkedIn, and email — starting real conversations, not spray-and-pray sequences. We handle every reply, every objection, every follow-up. You never touch the cold side of the conversation.",
-        },
-        {
-          title: "Qualified call delivery to your calendar",
-          body: "Prospects are qualified, pre-framed, and booked directly. You show up to calls with men who already understand your offer and are ready to invest — not cold strangers who need convincing of the basics.",
-        },
-        {
-          title: "Weekly optimisation and scaling",
-          body: "Every campaign is analysed weekly. Scripts are tested. Targeting is refined. The system compounds — what works in month one is better in month three. We don't set it and leave it.",
-        },
-      ],
-    },
-    honest: {
-      tag: "The Honest Part",
-      quote: `"We're not the biggest agency. We're building something serious — and we want the right coaches to build it with."`,
-      paragraphs: [
-        "Shaditz is new. We don't have a wall of client logos or ten years of case studies to show you. What we do have is a founder who has lived your problem, a system built specifically for your world, and a commitment to prove ourselves through results — not through looking established on a website.",
-        "That's why we're offering our first founding cohort a different arrangement: you get a reduced rate, we get to build the proof together. Full transparency. Weekly reporting. And if we don't deliver qualified conversations within the first 60 days, you don't pay for the second month.",
-        "That's the deal. No fine print.",
-      ],
-      pledgeTitle: "Our Founding Partner Guarantee",
-      pledgeItems: [
-        "Qualified conversations started within 14 days of launch",
-        "Weekly reporting — full visibility, no black boxes",
-        "If no results in 60 days — month two is free",
-        "Only 3 founding partner spots available",
-      ],
-    },
-  },
+  rebuilt: undefined,
   page: {
     sections: [
+      { id: "nav", type: "nav", enabled: true },
       { id: "hero", type: "hero", enabled: true },
-      { id: "trust-strip", type: "trust_strip", enabled: true },
-      { id: "founder", type: "founder", enabled: true },
-      { id: "promise", type: "promise", enabled: true },
-      { id: "how", type: "how", enabled: true },
-      { id: "honest", type: "honest", enabled: true },
+      { id: "showreel", type: "showreel", enabled: true },
+      { id: "services", type: "services", enabled: true },
+      { id: "portfolio", type: "portfolio", enabled: true },
+      { id: "tools", type: "tools", enabled: true },
+      { id: "process", type: "process", enabled: true },
+      { id: "testimonials", type: "testimonials", enabled: true },
       { id: "pricing", type: "pricing", enabled: true },
-      { id: "application", type: "application", enabled: true },
+      { id: "contact", type: "contact", enabled: true },
       { id: "footer", type: "footer", enabled: true },
     ],
   },
@@ -570,44 +483,44 @@ export const homepageDefaults: HomepageContent = {
       url: "/favicon.png",
     },
     nav: [
-      { label: "Our Story", href: "#founder" },
-      { label: "How It Works", href: "#how" },
+      { label: "Work", href: "#work" },
+      { label: "Process", href: "#process" },
       { label: "Pricing", href: "#pricing" },
     ],
-    primaryCta: { text: "Apply Now", href: "#apply" },
+    primaryCta: { text: "Hire Me", href: "#contact" },
   },
   hero: {
     badge: { icon: "auto_awesome", text: "Client Acquisition Infrastructure" },
     heading: {
-      prefix: "Predictable Booked Calls For ",
-      highlight: "Masculinity Coaches",
+      prefix: "Cinematic Editing For ",
+      highlight: "Brands, Creators & Businesses",
     },
     subcopy:
       "We install a client acquisition infrastructure that generates qualified sales conversations consistently — so you stop relying on content, referrals, or luck.",
-    note: "Every campaign is personally overseen by our team — AI handles the scale, humans handle the strategy.",
+    note: "Every project is edited with pacing, sound, color, and story in mind.",
     trust: {
       text: "Built exclusively for",
-      pills: ["Masculinity coaches", "$1k–$5k programmes", "High-ticket scale"],
+      pills: ["Video clients", "Short-form and long-form edits", "Cinematic delivery"],
     },
     proof: {
-      title: "Built for premium coaching businesses",
-      eyebrow: "A fit-first partnership process",
+      title: "Built for polished video delivery",
+      eyebrow: "A portfolio-first editing workflow",
       avatars: [],
     },
     metrics: [
-      { title: "Prospects Reached", value: "Consistent", icon: "users", tone: "gold" },
-      { title: "Qualified Leads", value: "Qualified", icon: "target", tone: "blue" },
-      { title: "Calls Booked", value: "Booked", icon: "calendar", tone: "green" },
+      { title: "Projects", value: "50+", icon: "movie", tone: "gold" },
+      { title: "Clients", value: "20+", icon: "users", tone: "blue" },
+      { title: "Experience", value: "3+ years", icon: "calendar", tone: "green" },
     ],
     revenueVisual: {
       value: "",
-      label: "Pipeline visibility",
+      label: "Cinematic editing",
     },
-    primaryCta: { text: "Apply for Partnership", href: "#apply", icon: "arrow_forward" },
-    secondaryCta: { text: "See How It Works", href: "#how" },
+    primaryCta: { text: "Hire Me", href: "#contact", icon: "arrow_forward" },
+    secondaryCta: { text: "See Process", href: "#process" },
   },
   trust: {
-    eyebrow: "Built exclusively for masculinity coaches selling $1k–$5k programmes.",
+    eyebrow: "Built for creators and businesses that need cinematic editing.",
     icons: [
       { type: "material", name: "sports_martial_arts" },
       { type: "material", name: "fitness_center" },
@@ -693,7 +606,7 @@ export const homepageDefaults: HomepageContent = {
           "60-day results guarantee",
         ],
         ctaText: "Apply for Starter",
-        ctaHref: "#apply",
+        ctaHref: "#contact",
       },
       {
         badge: "Most Selected",
@@ -711,7 +624,7 @@ export const homepageDefaults: HomepageContent = {
           "Monthly strategy call",
         ],
         ctaText: "Apply for Growth",
-        ctaHref: "#apply",
+        ctaHref: "#contact",
       },
       {
         badge: "For Established Coaches",
@@ -727,13 +640,13 @@ export const homepageDefaults: HomepageContent = {
           "Quarterly audit and scale review",
         ],
         ctaText: "Apply for Scale",
-        ctaHref: "#apply",
+        ctaHref: "#contact",
       },
     ],
   },
   application: {
     id: "lead-form",
-    headingTag: "Apply for Partnership",
+    headingTag: "Hire Me",
     heading: "Let's Build\nYour System",
     subcopy:
       "Tell us where you are and where you want to go. We review every application personally and only move forward when we're confident we can deliver results for you.",

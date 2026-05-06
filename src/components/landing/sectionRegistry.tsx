@@ -18,7 +18,14 @@ export const SECTION_REGISTRY: Record<
   PageSection["type"],
   (args: { content: HomepageContent; section: PageSection }) => ReactNode
 > = {
+  nav: () => null,
   hero: ({ content, section }) => <Hero content={content} section={section} />,
+  showreel: () => null,
+  services: () => null,
+  portfolio: () => null,
+  tools: () => null,
+  process: () => null,
+  contact: () => null,
   trust_strip: () => null,
   founder: () => null,
   promise: () => null,

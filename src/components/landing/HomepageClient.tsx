@@ -103,13 +103,17 @@ export function HomepageClient({ initialContent, isBuilderPreview, templateHtml,
 
   const sections: PageSection[] = resolved.page?.sections?.length
     ? (resolved.page.sections as PageSection[])
-    : ([
+      : ([
+        { id: "nav", type: "nav", enabled: true },
         { id: "hero", type: "hero", enabled: true },
-        { id: "features", type: "features", enabled: true },
-        { id: "workflow", type: "workflow", enabled: true },
+        { id: "showreel", type: "showreel", enabled: true },
+        { id: "services", type: "services", enabled: true },
+        { id: "portfolio", type: "portfolio", enabled: true },
+        { id: "tools", type: "tools", enabled: true },
+        { id: "process", type: "process", enabled: true },
+        { id: "testimonials", type: "testimonials", enabled: true },
         { id: "pricing", type: "pricing", enabled: true },
-        { id: "audit-bridge", type: "audit_bridge", enabled: true },
-        { id: "application", type: "application", enabled: true },
+        { id: "contact", type: "contact", enabled: true },
         { id: "footer", type: "footer", enabled: true },
       ] as PageSection[]);
 
@@ -119,13 +123,13 @@ export function HomepageClient({ initialContent, isBuilderPreview, templateHtml,
 
   if (shouldUseRebuiltTemplate) {
     return (
-      <div className="flex flex-1 flex-col">
+      <div className="flex min-h-screen flex-1 flex-col bg-[#080808]">
         <RebuiltLandingFrame
           content={resolved}
           templateHtml={templateHtml}
           device={isBuilderPreview ? previewDevice : "desktop"}
         />
-        <WhatsAppWidget content={resolved} />
+        {resolved.whatsapp?.enabled ? <WhatsAppWidget content={resolved} /> : null}
         {isBuilderPreview && !hasPreviewOverride ? (
           <div className="fixed bottom-4 left-4 rounded-lg border border-slate-200 bg-white/90 px-3 py-2 text-xs text-slate-700 shadow-sm backdrop-blur dark:border-white/10 dark:bg-black/50 dark:text-slate-200">
             Waiting for builder preview…

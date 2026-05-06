@@ -32,7 +32,13 @@ function injectBeforeCloseTag(html: string, tag: "head" | "body", insertion: str
   return html.slice(0, idx) + insertion + html.slice(idx);
 }
 
-export function RebuiltLandingFrame({ content, templateHtml, device = "desktop", className, height = "100vh" }: Props) {
+export function RebuiltLandingFrame({
+  content,
+  templateHtml,
+  device = "desktop",
+  className,
+  height = "100vh",
+}: Props) {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [fetchedTemplate, setFetchedTemplate] = useState<string | null>(null);
 
@@ -42,12 +48,10 @@ export function RebuiltLandingFrame({ content, templateHtml, device = "desktop",
     fetch("/shaditz-rebuilt-1.html", { cache: "no-store" })
       .then((r) => (r.ok ? r.text() : Promise.reject(new Error(`template_fetch_${r.status}`))))
       .then((t) => {
-        if (!alive) return;
-        setFetchedTemplate(t);
+        if (alive) setFetchedTemplate(t);
       })
       .catch(() => {
-        if (!alive) return;
-        setFetchedTemplate("");
+        if (alive) setFetchedTemplate("");
       });
     return () => {
       alive = false;
@@ -62,489 +66,428 @@ export function RebuiltLandingFrame({ content, templateHtml, device = "desktop",
     const customCss = safeText(content.site?.customCss).trim();
     const customJs = safeText(content.site?.customJs).trim();
     const initial = {
-      header: content.header,
-      hero: content.hero,
-      pricing: content.pricing,
-      application: content.application,
-      footer: content.footer,
-      whatsapp: content.whatsapp,
-      rebuilt: content.rebuilt,
+      shaditz: content.shaditz,
       page: content.page,
-      socialLinks: content.socialLinks,
-      socialLinksV2: content.socialLinksV2,
+      site: content.site,
+      whatsapp: content.whatsapp,
     };
 
     const bootstrap = `
-<script id="cf-rebuilt-bootstrap">
+<script id="shaditz-landing-bootstrap">
 (function(){
-  function q(sel){return document.querySelector(sel);}
-  function qa(sel){return Array.prototype.slice.call(document.querySelectorAll(sel));}
-  function setText(el, text){ if(!el) return; el.textContent = String(text || ""); }
-  function setRichText(el, raw){
-    if(!el) return;
-    var s = String(raw || "");
-    s = s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-    s = s.replace(/&lt;(\\/?)\\s*(strong|em)\\s*&gt;/gi, "<$1$2>");
-    s = s.replace(/&lt;br\\s*\\/?&gt;/gi, "<br>");
-    el.innerHTML = s;
+  function q(sel){ return document.querySelector(sel); }
+  function qa(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function text(v){ return typeof v === "string" ? v : ""; }
+  function arr(v){ return Array.isArray(v) ? v : []; }
+  function esc(v){
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
   }
-  function clampArray(arr, n){ var out = []; for (var i=0;i<n;i++){ out.push(arr && arr[i] ? arr[i] : ""); } return out; }
-  function safeItems(arr){ return Array.isArray(arr) ? arr.map(function(v){ return typeof v === "string" ? v : ""; }).filter(Boolean) : []; }
+  function setText(el, value){ if(el) el.textContent = text(value); }
+  function setTitle(el, value){ if(el) el.innerHTML = esc(text(value)).replace(/\\n/g, "<br>"); }
+  function setHref(el, href){ if(el && text(href)) el.setAttribute("href", text(href)); }
   function sectionByType(content, type){
     var sections = content && content.page && Array.isArray(content.page.sections) ? content.page.sections : [];
-    for (var i=0; i<sections.length; i++){
-      if (sections[i] && sections[i].type === type) return sections[i];
-    }
+    for(var i=0;i<sections.length;i++){ if(sections[i] && sections[i].type === type) return sections[i]; }
     return null;
   }
-  function sectionBg(section){
-    var settings = section && section.settings ? section.settings : {};
-    var background = settings && settings.background ? settings.background : {};
-    var type = typeof settings.backgroundType === "string" ? settings.backgroundType : "";
-    var image = typeof settings.backgroundImage === "string" ? settings.backgroundImage : "";
-    var url = typeof background.url === "string" ? background.url : "";
-    var overlay = typeof settings.overlayColor === "string" ? settings.overlayColor : "";
-    var color = typeof settings.backgroundColor === "string"
-      ? settings.backgroundColor
-      : (typeof settings.backgroundColorHex === "string" ? settings.backgroundColorHex : "");
-    return { type: type, image: image || url, overlay: overlay, color: color };
+  function sectionSelector(type){
+    return {
+      nav: "nav",
+      hero: "#home",
+      showreel: "#reel",
+      services: "#services",
+      portfolio: "#work",
+      tools: "#tools",
+      process: "#process",
+      testimonials: "#testimonials",
+      pricing: "#pricing",
+      contact: "#contact",
+      footer: "footer"
+    }[type] || "";
   }
-  function applyBg(target, cfg){
-    if(!target) return;
-    target.style.backgroundImage = cfg && cfg.type === "image" && cfg.image ? ("url(" + cfg.image + ")") : "";
-    target.style.backgroundSize = cfg && cfg.type === "image" && cfg.image ? "cover" : "";
-    target.style.backgroundPosition = cfg && cfg.type === "image" && cfg.image ? "center" : "";
-    target.style.backgroundRepeat = cfg && cfg.type === "image" && cfg.image ? "no-repeat" : "";
-    target.style.backgroundColor = cfg && cfg.type === "color" && cfg.color ? cfg.color : "";
+  function settings(content, type){
+    var section = sectionByType(content, type);
+    return section && section.settings && typeof section.settings === "object" ? section.settings : {};
   }
-  function applyOverlay(target, rgba){
-    if(!target) return;
-    var ov = target.querySelector(":scope > .cf-bg-overlay");
-    if(!rgba){
-      if(ov && ov.parentNode) ov.parentNode.removeChild(ov);
+  function imageFrom(cfg){
+    if(!cfg || typeof cfg !== "object") return "";
+    if(typeof cfg.backgroundImage === "string") return cfg.backgroundImage;
+    if(cfg.background && typeof cfg.background.url === "string") return cfg.background.url;
+    return "";
+  }
+  function applyBackground(content, type){
+    if(type === "nav" || type === "footer") return;
+    var el = q(sectionSelector(type));
+    if(!el) return;
+    var cfg = settings(content, type);
+    var backgroundType = text(cfg.backgroundType);
+    var img = imageFrom(cfg);
+    var overlay = text(cfg.overlayColor);
+    var color = text(cfg.backgroundColor || cfg.backgroundColorHex);
+
+    el.style.position = el.style.position || "relative";
+    if(backgroundType === "image" && img){
+      var layer = overlay ? "linear-gradient(" + overlay + "," + overlay + "), " : "";
+      el.style.backgroundImage = layer + "url(" + img + ")";
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+      el.style.backgroundRepeat = "no-repeat";
+    } else if(backgroundType === "color" && color) {
+      el.style.backgroundImage = "";
+      el.style.backgroundColor = color;
+    } else {
+      el.style.backgroundImage = "";
+    }
+  }
+  function toEmbedUrl(url){
+    var raw = text(url).trim();
+    if(!raw) return "";
+    try{
+      var u = new URL(raw, window.location.href);
+      if(u.hostname.indexOf("youtu.be") !== -1){
+        var id = u.pathname.replace(/^\\//, "");
+        return id ? "https://www.youtube.com/embed/" + encodeURIComponent(id) : raw;
+      }
+      if(u.hostname.indexOf("youtube.com") !== -1){
+        var v = u.searchParams.get("v");
+        if(v) return "https://www.youtube.com/embed/" + encodeURIComponent(v);
+        if(u.pathname.indexOf("/shorts/") === 0) return "https://www.youtube.com/embed/" + encodeURIComponent(u.pathname.split("/")[2] || "");
+      }
+      if(u.hostname.indexOf("vimeo.com") !== -1){
+        var parts = u.pathname.split("/").filter(Boolean);
+        if(parts[0]) return "https://player.vimeo.com/video/" + encodeURIComponent(parts[0]);
+      }
+    } catch(e){}
+    return raw;
+  }
+  function renderNav(data){
+    setText(q(".nav-logo"), data.nav && data.nav.logo);
+    var links = arr(data.nav && data.nav.links);
+    var root = q(".nav-links");
+    if(root){
+      root.innerHTML = links.map(function(link){
+        return '<li><a href="' + esc(link.href || "#") + '">' + esc(link.label) + "</a></li>";
+      }).join("");
+    }
+    var cta = q(".nav-cta");
+    if(cta && data.nav && data.nav.cta){
+      setText(cta, data.nav.cta.label);
+      setHref(cta, data.nav.cta.href);
+    }
+  }
+  function renderHero(data){
+    var hero = data.hero || {};
+    setText(q(".hero-eyebrow"), hero.eyebrow);
+    var title = q(".hero-title");
+    if(title) title.innerHTML = esc(hero.titleLine1) + "<br><span>" + esc(hero.titleHighlight) + "</span>";
+    setText(q(".hero-subtitle"), hero.subtitle);
+    var buttons = qa(".hero-actions a");
+    if(buttons[0] && hero.primaryCta){ setText(buttons[0], hero.primaryCta.label); setHref(buttons[0], hero.primaryCta.href); }
+    if(buttons[1] && hero.secondaryCta){ setText(buttons[1], hero.secondaryCta.label); setHref(buttons[1], hero.secondaryCta.href); }
+    var stats = arr(hero.stats);
+    var statsRoot = q(".hero-stats");
+    if(statsRoot){
+      statsRoot.innerHTML = stats.map(function(stat){
+        return '<div><div class="stat-num">' + esc(stat.value) + '</div><div class="stat-label">' + esc(stat.label) + "</div></div>";
+      }).join("");
+    }
+    var scroll = q(".scroll-indicator");
+    if(scroll){
+      scroll.innerHTML = '<div class="scroll-line"></div>' + esc(hero.scrollText || "");
+    }
+    var heroEl = q("#home");
+    if(heroEl && hero.background && hero.background.url){
+      heroEl.style.backgroundImage = "url(" + hero.background.url + ")";
+      heroEl.style.backgroundSize = "cover";
+      heroEl.style.backgroundPosition = "center";
+    }
+  }
+  function renderShowreel(data){
+    var reel = data.showreel || {};
+    setText(q("#reel .section-label"), reel.label);
+    setTitle(q("#reel .section-title"), reel.title);
+    setText(q("#reel .reel-note"), reel.note);
+    var root = q("#reel .reel-container");
+    if(!root) return;
+    var url = text(reel.videoUrl).trim();
+    if(url){
+      var embed = toEmbedUrl(url);
+      if(/\\.(mp4|webm|mov)(\\?|#|$)/i.test(embed)){
+        root.innerHTML = '<video src="' + esc(embed) + '" controls playsinline style="width:100%;height:100%;display:block;object-fit:cover"></video>';
+      } else {
+        root.innerHTML = '<iframe src="' + esc(embed) + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
+      }
+    } else {
+      root.innerHTML = '<div class="reel-placeholder"><div class="play-btn"></div><p class="reel-text">' + esc(reel.placeholderText || "SHOWREEL") + "</p></div>";
+    }
+  }
+  function renderServices(data){
+    var sec = data.services || {};
+    setText(q("#services .section-label"), sec.label);
+    setTitle(q("#services .section-title"), sec.title);
+    var root = q("#services .services-grid");
+    if(!root) return;
+    root.innerHTML = arr(sec.items).map(function(item){
+      var tags = arr(item.tags).map(function(tag){ return '<span class="tag">' + esc(tag) + "</span>"; }).join("");
+      return '<div class="service-card reveal"><span class="service-icon">' + esc(item.icon) + '</span><div class="service-num">' + esc(item.number) + '</div><h3 class="service-title">' + esc(item.title) + '</h3><p class="service-desc">' + esc(item.description) + '</p><div class="service-tags">' + tags + "</div></div>";
+    }).join("");
+  }
+  function renderPortfolio(data){
+    var sec = data.portfolio || {};
+    setText(q("#work .section-label"), sec.label);
+    setTitle(q("#work .section-title"), sec.title);
+    var root = q("#work .portfolio-grid");
+    if(!root) return;
+    root.innerHTML = arr(sec.items).map(function(item){
+      var media = item.image && item.image.url
+        ? '<img class="portfolio-thumb" src="' + esc(item.image.url) + '" alt="' + esc(item.title) + '">'
+        : '<div class="portfolio-thumb-placeholder"><span class="portfolio-placeholder-icon">' + esc(item.icon || "🎬") + "</span></div>";
+      var body = media +
+        '<div class="portfolio-always-text"><div class="portfolio-always-cat">' + esc(item.category) + '</div><div class="portfolio-always-name">' + esc(item.title) + '</div></div>' +
+        '<div class="portfolio-overlay"><div class="portfolio-cat">' + esc(item.meta || item.category) + '</div><div class="portfolio-name">' + esc(item.title) + "</div></div>";
+      var cls = item.wide ? "portfolio-item wide" : "portfolio-item";
+      if(item.href) return '<a class="' + cls + '" href="' + esc(item.href) + '">' + body + "</a>";
+      return '<div class="' + cls + '">' + body + "</div>";
+    }).join("");
+  }
+  function renderTools(data){
+    var sec = data.tools || {};
+    setText(q("#tools .section-label"), sec.label);
+    setTitle(q("#tools .section-title"), sec.title);
+    var root = q("#tools .tools-grid");
+    if(!root) return;
+    root.innerHTML = arr(sec.items).map(function(item){
+      return '<div class="tool-card"><div class="tool-icon">' + esc(item.icon) + '</div><div class="tool-name">' + esc(item.name) + "</div></div>";
+    }).join("");
+  }
+  function renderProcess(data){
+    var sec = data.process || {};
+    setText(q("#process .section-label"), sec.label);
+    setTitle(q("#process .section-title"), sec.title);
+    var root = q("#process .process-steps");
+    if(!root) return;
+    root.innerHTML = arr(sec.steps).map(function(step){
+      return '<div class="process-step"><div class="step-num">' + esc(step.number) + '</div><h3 class="step-title">' + esc(step.title) + '</h3><p class="step-desc">' + esc(step.description) + "</p></div>";
+    }).join("");
+  }
+  function renderTestimonials(data){
+    var sec = data.testimonials || {};
+    setText(q("#testimonials .section-label"), sec.label);
+    setTitle(q("#testimonials .section-title"), sec.title);
+    var root = q("#testimonials .testimonials-grid");
+    if(!root) return;
+    root.innerHTML = arr(sec.items).map(function(item){
+      return '<div class="testimonial-card reveal"><div class="quote-mark">"</div><p class="quote-text">' + esc(item.quote) + '</p><div class="quote-author"><div class="author-avatar">' + esc(item.avatar || "👤") + '</div><div><div class="stars">' + esc(item.stars || "★★★★★") + '</div><div class="author-name">' + esc(item.author) + '</div><div class="author-title">' + esc(item.role) + "</div></div></div></div>";
+    }).join("");
+  }
+  function renderPricing(data){
+    var sec = data.pricing || {};
+    setText(q("#pricing .section-label"), sec.label);
+    setTitle(q("#pricing .section-title"), sec.title);
+    var root = q("#pricing .pricing-grid");
+    if(!root) return;
+    root.innerHTML = arr(sec.tiers).map(function(tier){
+      var features = arr(tier.features).map(function(f){ return "<li>" + esc(f) + "</li>"; }).join("");
+      var cls = tier.featured ? "pricing-card featured" : "pricing-card";
+      var cta = tier.cta || {};
+      return '<div class="' + cls + '"><div class="pricing-tier">' + esc(tier.name) + '</div><div class="pricing-price">' + esc(tier.price) + '</div><div class="pricing-unit">' + esc(tier.unit) + '</div><ul class="pricing-features">' + features + '</ul><a href="' + esc(cta.href || "#contact") + '" class="pricing-btn">' + esc(cta.label || "Get Started") + "</a></div>";
+    }).join("");
+  }
+  function renderContact(data){
+    var sec = data.contact || {};
+    setText(q("#contact .contact-left .section-label"), sec.label);
+    setTitle(q("#contact .contact-left .section-title"), sec.title);
+    setText(q("#contact .contact-right .section-label"), sec.formLabel);
+    var infoRoot = q("#contact .contact-info");
+    if(infoRoot){
+      infoRoot.innerHTML = arr(sec.info).map(function(item){
+        var value = item.href ? '<a href="' + esc(item.href) + '">' + esc(item.value) + "</a>" : esc(item.value);
+        return '<div class="contact-item"><span class="contact-icon">' + esc(item.icon) + '</span><div><div class="contact-label">' + esc(item.label) + '</div><div class="contact-value">' + value + "</div></div></div>";
+      }).join("");
+    }
+    var fields = sec.fields || {};
+    var labels = qa("#contact .contact-right .form-label");
+    var inputs = qa("#contact .contact-right .form-input");
+    var textarea = q("#contact .contact-right .form-textarea");
+    setText(labels[0], fields.nameLabel);
+    setText(labels[1], fields.emailLabel);
+    setText(labels[2], fields.projectLabel);
+    setText(labels[3], fields.messageLabel);
+    if(inputs[0]) inputs[0].setAttribute("placeholder", text(fields.namePlaceholder));
+    if(inputs[1]) inputs[1].setAttribute("placeholder", text(fields.emailPlaceholder));
+    if(inputs[2]) inputs[2].setAttribute("placeholder", text(fields.projectPlaceholder));
+    if(textarea) textarea.setAttribute("placeholder", text(fields.messagePlaceholder));
+    var btn = q("#contact .form-submit");
+    if(btn) setText(btn, sec.submitText || "Send Message →");
+  }
+  function renderFooter(data){
+    var sec = data.footer || {};
+    setText(q("footer .footer-logo"), sec.logo);
+    setText(q("footer .footer-copy"), sec.copyright);
+    var root = q("footer .social-links");
+    if(root){
+      root.innerHTML = arr(sec.socialLinks).map(function(link){
+        return '<a href="' + esc(link.href || "#") + '" title="' + esc(link.label) + '">' + esc(link.label) + "</a>";
+      }).join("");
+    }
+  }
+  function applyOrderAndVisibility(content){
+    var page = content && content.page ? content.page : {};
+    var sections = arr(page.sections);
+    var byType = {};
+    sections.forEach(function(section){ if(section && section.type) byType[section.type] = section; });
+    Object.keys(sectionSelectorMap).forEach(function(type){});
+    ["nav","hero","showreel","services","portfolio","tools","process","testimonials","pricing","contact","footer"].forEach(function(type){
+      var el = q(sectionSelector(type));
+      if(!el) return;
+      var section = byType[type];
+      el.style.display = section && section.enabled === false ? "none" : "";
+    });
+    var anchor = document.getElementById("shaditz-landing-bootstrap");
+    sections.forEach(function(section){
+      if(!section || section.type === "nav") return;
+      var el = q(sectionSelector(section.type));
+      if(el && anchor && el.parentNode === document.body) document.body.insertBefore(el, anchor);
+    });
+  }
+  function refreshReveal(){
+    var revealItems = qa(".reveal");
+    if(!("IntersectionObserver" in window)){
+      revealItems.forEach(function(el){ el.classList.add("visible"); });
       return;
     }
-    if(!ov){
-      ov = document.createElement("div");
-      ov.className = "cf-bg-overlay";
-      ov.style.position = "absolute";
-      ov.style.inset = "0";
-      ov.style.pointerEvents = "none";
-      target.insertBefore(ov, target.firstChild || null);
-    }
-    ov.style.backgroundColor = rgba;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add("visible");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    revealItems.forEach(function(el){
+      if(el.dataset.shaditzObserved) return;
+      el.dataset.shaditzObserved = "1";
+      io.observe(el);
+    });
   }
-  function applySectionBackgrounds(content){
-    var heroSection = sectionByType(content, "hero");
-    var heroCfg = sectionBg(heroSection);
-    var heroFallback = content && content.hero && content.hero.backgroundImage && content.hero.backgroundImage.url
-      ? String(content.hero.backgroundImage.url)
-      : "";
-    if(!heroCfg.image && heroFallback){
-      heroCfg.image = heroFallback;
-      if(!heroCfg.type) heroCfg.type = "image";
-    }
-    var heroEl = q(".hero");
-    if(heroEl){
-      heroEl.style.position = heroEl.style.position || "relative";
-      applyBg(heroEl, heroCfg);
-      applyOverlay(heroEl, heroCfg.overlay);
-    }
-
-    var sectionMap = [
-      { type: "founder", selector: "#founder", contentKey: "rebuilt", nestedKey: "founder" },
-      { type: "promise", selector: "#promise", contentKey: "rebuilt", nestedKey: "promise" },
-      { type: "how", selector: "#how", contentKey: "rebuilt", nestedKey: "how" },
-      { type: "honest", selector: "#honest", contentKey: "rebuilt", nestedKey: "honest" },
-      { type: "pricing", selector: "#pricing", contentKey: "pricing", nestedKey: null },
-      { type: "application", selector: "#apply", contentKey: "application", nestedKey: null }
-    ];
-    for (var i=0; i<sectionMap.length; i++){
-      var item = sectionMap[i];
-      var sec = sectionByType(content, item.type);
-      var cfg = sectionBg(sec);
-      var fallbackImage = "";
-      if(item.contentKey === "pricing" && content && content.pricing && content.pricing.backgroundImage && content.pricing.backgroundImage.url){
-        fallbackImage = String(content.pricing.backgroundImage.url);
-      }
-      if(item.contentKey === "application" && content && content.application && content.application.backgroundImage && content.application.backgroundImage.url){
-        fallbackImage = String(content.application.backgroundImage.url);
-      }
-      if(!cfg.image && fallbackImage){
-        cfg.image = fallbackImage;
-        if(!cfg.type) cfg.type = "image";
-      }
-      var el = q(item.selector);
-      if(!el) continue;
-      el.style.position = el.style.position || "relative";
-      applyBg(el, cfg);
-      applyOverlay(el, cfg.overlay);
-    }
+  function bindCursor(){
+    var cursor = document.getElementById("cursor");
+    var follower = document.getElementById("cursorFollower");
+    if(!cursor || !follower) return;
+    qa("a, button").forEach(function(el){
+      if(el.dataset.cursorBound) return;
+      el.dataset.cursorBound = "1";
+      el.addEventListener("mouseenter", function(){
+        cursor.style.transform = "translate(-50%, -50%) scale(2)";
+        follower.style.transform = "translate(-50%, -50%) scale(1.5)";
+        follower.style.borderColor = "rgba(201,168,76,0.8)";
+      });
+      el.addEventListener("mouseleave", function(){
+        cursor.style.transform = "translate(-50%, -50%) scale(1)";
+        follower.style.transform = "translate(-50%, -50%) scale(1)";
+        follower.style.borderColor = "rgba(201,168,76,0.4)";
+      });
+    });
   }
-  function applySectionEnabled(map){
-    if(!map) return;
-    var byType = {};
-    if(map.sections && map.sections.length){
-      for (var i=0;i<map.sections.length;i++){
-        var s = map.sections[i];
-        if(!s || !s.type) continue;
-        byType[String(s.type)] = s.enabled !== false;
-      }
-    }
-    function show(idOrSelector, enabled){
-      var el = document.getElementById(idOrSelector) || q(idOrSelector);
-      if(!el) return;
-      el.style.display = enabled ? "" : "none";
-    }
-    show(".hero", byType.hero !== false);
-    show(".trust-strip", byType.trust_strip !== false);
-    show("#founder", byType.founder !== false);
-    show("#promise", byType.promise !== false);
-    show("#how", byType.how !== false);
-    show("#honest", byType.honest !== false);
-    show("#pricing", byType.pricing !== false);
-    show("#apply", byType.application !== false);
-    show("footer", byType.footer !== false);
-  }
-
-  function applyContent(content){
-    try{
-      if(!content) return;
-      var rebuilt = content.rebuilt || {};
-
-      var brandText = (content.header && content.header.brandText) ? String(content.header.brandText) : "Shaditz";
-      setText(q(".nav-logo"), brandText);
-      setText(q("footer .footer-logo"), (content.footer && content.footer.brandText) ? content.footer.brandText : brandText);
-
-      var navItems = (content.header && Array.isArray(content.header.nav)) ? content.header.nav : [];
-      var navCta = content.header && content.header.primaryCta ? content.header.primaryCta : null;
-      var navAnchors = qa("nav .nav-links a");
-      if(navAnchors.length >= 4){
-        for (var i=0;i<3;i++){
-          var n = navItems[i] || null;
-          if(n && n.label) setText(navAnchors[i], n.label);
-          if(n && n.href) navAnchors[i].setAttribute("href", n.href);
-        }
-        if(navCta && navCta.text) setText(navAnchors[3], navCta.text);
-        if(navCta && navCta.href) navAnchors[3].setAttribute("href", navCta.href);
-      }
-
-      var mobileAnchors = qa("#mobile-menu a");
-      if(mobileAnchors.length >= 4){
-        for (var j=0;j<3;j++){
-          var mn = navItems[j] || null;
-          if(mn && mn.label) setText(mobileAnchors[j], mn.label);
-          if(mn && mn.href) mobileAnchors[j].setAttribute("href", mn.href);
-        }
-        if(navCta && navCta.text) setText(mobileAnchors[3], navCta.text);
-        if(navCta && navCta.href) mobileAnchors[3].setAttribute("href", navCta.href);
-      }
-
-      var hero = rebuilt.hero || {};
-      if(hero.tag) setText(q(".hero-tag"), hero.tag);
-      if(hero.headlineLine1 || hero.headlineLine2Prefix || hero.headlineHighlight){
-        var h1 = q(".hero h1");
-        if(h1){
-          var line1 = String(hero.headlineLine1 || "");
-          var line2p = String(hero.headlineLine2Prefix || "");
-          var hi = String(hero.headlineHighlight || "");
-          setRichText(h1, line1 + "<br>" + line2p + "<em>" + hi + "</em>");
-        }
-      }
-      if(hero.subcopyBeforeStrong || hero.subcopyStrong || hero.subcopyAfterStrong){
-        var p = q(".hero-sub");
-        if(p){
-          var pre = String(hero.subcopyBeforeStrong || "");
-          var strong = String(hero.subcopyStrong || "");
-          var post = String(hero.subcopyAfterStrong || "");
-          setRichText(p, pre + "<strong>" + strong + "</strong>" + post);
-        }
-      }
-      if(hero.note) setText(q(".hero-note"), hero.note);
-
-      var heroActions = qa(".hero-actions a");
-      if(heroActions.length >= 2){
-        var cta1 = content.hero && content.hero.primaryCta ? content.hero.primaryCta : null;
-        var cta2 = content.hero && content.hero.secondaryCta ? content.hero.secondaryCta : null;
-        if(cta1){
-          if(cta1.text) setText(heroActions[0], cta1.text);
-          if(cta1.href) heroActions[0].setAttribute("href", cta1.href);
-        }
-        if(cta2){
-          if(cta2.text) setText(heroActions[1], cta2.text);
-          if(cta2.href) heroActions[1].setAttribute("href", cta2.href);
-        }
-      }
-
-      var trust = rebuilt.trustStrip || {};
-      var trustItems = clampArray(trust.items || [], 5);
-      var trustEls = qa(".trust-strip .trust-item");
-      if(trustEls.length){
-        for (var t=0;t<trustEls.length;t++){
-          if(trustItems[t]) setText(trustEls[t], trustItems[t]);
-        }
-      }
-
-      var founder = rebuilt.founder || {};
-      if(founder.label) setText(q("#founder .founder-label"), founder.label);
-      if(founder.avatarText) setText(q("#founder .founder-avatar"), founder.avatarText);
-      if(founder.name) setText(q("#founder .founder-name"), founder.name);
-      if(founder.title) setText(q("#founder .founder-title"), founder.title);
-      if(founder.quote) setText(q("#founder .founder-quote"), founder.quote);
-      var founderPs = qa("#founder .founder-body p");
-      var fp = safeItems(founder.paragraphs);
-      if(founderPs.length && fp.length){
-        for (var fi=0; fi<founderPs.length; fi++){
-          if(fp[fi]) setRichText(founderPs[fi], fp[fi]);
-        }
-      }
-
-      var promise = rebuilt.promise || {};
-      if(promise.tag) setText(q("#promise .section-tag"), promise.tag);
-      if(promise.heading) setText(q("#promise .section-title"), promise.heading);
-      if(promise.subcopy) setText(q("#promise .section-body"), promise.subcopy);
-      var promiseCards = Array.isArray(promise.cards) ? promise.cards : [];
-      var cardEls = qa("#promise .promise-card");
-      for (var ci=0; ci<cardEls.length; ci++){
-        var c = promiseCards[ci] || null;
-        if(!c) continue;
-        setText(cardEls[ci].querySelector(".promise-title"), c.title);
-        setText(cardEls[ci].querySelector(".promise-body"), c.body);
-      }
-
-      var how = rebuilt.how || {};
-      if(how.tag) setText(q("#how .section-tag"), how.tag);
-      if(how.heading) setText(q("#how .section-title"), how.heading);
-      if(how.subcopy) setText(q("#how .section-body"), how.subcopy);
-      var steps = Array.isArray(how.steps) ? how.steps : [];
-      var stepEls = qa("#how .step");
-      for (var si=0; si<stepEls.length; si++){
-        var st = steps[si] || null;
-        if(!st) continue;
-        setText(stepEls[si].querySelector(".step-title"), st.title);
-        setText(stepEls[si].querySelector(".step-body"), st.body);
-      }
-
-      var honest = rebuilt.honest || {};
-      if(honest.tag){
-        var honestTag = q("#honest .section-tag");
-        if(honestTag) setText(honestTag, honest.tag);
-      }
-      if(honest.quote) setText(q("#honest .honest-quote"), honest.quote);
-      var honestPs = qa("#honest .honest-body p");
-      var hp = safeItems(honest.paragraphs);
-      if(honestPs.length && hp.length){
-        for (var hi=0; hi<honestPs.length; hi++){
-          if(hp[hi]) setRichText(honestPs[hi], hp[hi]);
-        }
-      }
-      if(honest.pledgeTitle) setText(q("#honest .honest-pledge-title"), honest.pledgeTitle);
-      var pledgeItems = safeItems(honest.pledgeItems);
-      var pledgeEls = qa("#honest .honest-pledge-items li");
-      for (var pi=0; pi<pledgeEls.length; pi++){
-        if(pledgeItems[pi]) setText(pledgeEls[pi], pledgeItems[pi]);
-      }
-
-      var pricing = content.pricing || {};
-      if(pricing.tag) setText(q("#pricing .founding-header .section-tag"), pricing.tag);
-      if(pricing.heading) setText(q("#pricing .founding-header .section-title"), pricing.heading);
-      if(pricing.subcopy){
-        var sideNote = q("#pricing .founding-header p");
-        if(sideNote) setText(sideNote, pricing.subcopy);
-      }
-      if(pricing.note) setText(q("#pricing .founding-note"), pricing.note);
-
-      var tiers = Array.isArray(pricing.tiers) ? pricing.tiers : [];
-      var tierEls = qa("#pricing .tier");
-      for (var ti=0; ti<tierEls.length; ti++){
-        var tr = tiers[ti] || null;
-        if(!tr) continue;
-        var badge = tierEls[ti].querySelector(".tier-badge");
-        if(badge){
-          if(tr.highlight && tr.highlight.badge) setText(badge, tr.highlight.badge);
-          if(tr.badge) setText(badge, tr.badge);
-        }
-        if(tr.highlight){ tierEls[ti].classList.add("featured"); } else { tierEls[ti].classList.remove("featured"); }
-        setText(tierEls[ti].querySelector(".tier-name"), tr.name);
-        setText(tierEls[ti].querySelector(".tier-desc"), tr.tagline);
-        var priceNum = tierEls[ti].querySelector(".tier-price-num");
-        if(priceNum) setText(priceNum, tr.price);
-        var priceWas = tierEls[ti].querySelector(".tier-price-was");
-        if(priceWas && tr.priceWas) setText(priceWas, tr.priceWas);
-        var priceMo = tierEls[ti].querySelector(".tier-price-mo");
-        if(priceMo) setText(priceMo, tr.priceSuffix || "");
-        var cta = tierEls[ti].querySelector("a.tier-cta");
-        if(cta){
-          if(tr.ctaText) setText(cta, tr.ctaText);
-          if(tr.ctaHref) cta.setAttribute("href", tr.ctaHref);
-        }
-        var bulletEls = Array.prototype.slice.call(tierEls[ti].querySelectorAll(".tier-features li"));
-        var bullets = Array.isArray(tr.bullets) ? tr.bullets : [];
-        for (var bi=0; bi<bulletEls.length; bi++){
-          if(typeof bullets[bi] === "string" && bullets[bi]) setText(bulletEls[bi], bullets[bi]);
-        }
-      }
-
-      var app = content.application || {};
-      if(app.headingTag) setText(q("#apply .form-left .section-tag"), app.headingTag);
-      if(app.heading){
-        var applyH = q("#apply .form-left .section-title");
-        if(applyH) setRichText(applyH, String(app.heading || "").split("\\n").join("<br>"));
-      }
-      if(app.subcopy){
-        var applyBody = q("#apply .form-left .section-body");
-        if(applyBody) setText(applyBody, app.subcopy);
-      }
-      if(Array.isArray(app.promiseItems)){
-        var piEls = qa("#apply .form-promise-item");
-        for (var api=0; api<piEls.length; api++){
-          var it = app.promiseItems[api] || null;
-          if(!it) continue;
-          var strongEl = piEls[api].querySelector("strong");
-          var spanEl = piEls[api].querySelector("span");
-          if(strongEl) setText(strongEl, it.title);
-          if(spanEl) setText(spanEl, it.body);
-        }
-      }
-      if(app.formTitle) setText(q("#apply .form-title"), app.formTitle);
-      if(app.formSubtitle) setText(q("#apply .form-subtitle"), app.formSubtitle);
-
-      var fields = app.fields || {};
-      if(fields.firstNameLabel) setText(q('label[for="fname"]'), fields.firstNameLabel);
-      if(fields.lastNameLabel) setText(q('label[for="lname"]'), fields.lastNameLabel);
-      if(fields.emailLabel) setText(q('label[for="email"]'), fields.emailLabel);
-      if(fields.revenueLabel) setText(q('label[for="revenue"]'), fields.revenueLabel);
-      if(fields.bottleneckLabel) setText(q('label[for="bottleneck"]'), fields.bottleneckLabel);
-      if(fields.firstNamePlaceholder) { var f = q("#fname"); if(f) f.setAttribute("placeholder", fields.firstNamePlaceholder); }
-      if(fields.lastNamePlaceholder) { var l = q("#lname"); if(l) l.setAttribute("placeholder", fields.lastNamePlaceholder); }
-      if(fields.emailPlaceholder) { var em = q("#email"); if(em) em.setAttribute("placeholder", fields.emailPlaceholder); }
-      if(fields.bottleneckPlaceholder) { var b = q("#bottleneck"); if(b) b.setAttribute("placeholder", fields.bottleneckPlaceholder); }
-
-      if(Array.isArray(fields.revenueOptions)){
-        var sel = q("#revenue");
-        if(sel){
-          var placeholder = String(fields.revenuePlaceholder || "Select your range");
-          var opts = ['<option value="">' + placeholder.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") + "</option>"];
-          for (var ro=0; ro<fields.revenueOptions.length; ro++){
-            var opt = fields.revenueOptions[ro] || null;
-            if(!opt) continue;
-            var value = String(opt.value || "");
-            var label = String(opt.label || "");
-            opts.push(
-              '<option value="' +
-                value.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;") +
-                '">' +
-                label.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;") +
-                "</option>"
-            );
-          }
-          sel.innerHTML = opts.join("");
-        }
-      }
-
-      if(app.submitText) setText(q("#apply .form-submit"), app.submitText);
-      if(app.footnote) setText(q("#apply .form-disclaimer"), app.footnote);
-      if(app.successTitle) setText(q("#apply #form-success h3"), app.successTitle);
-      if(app.successBody) setText(q("#apply #form-success p"), app.successBody);
-
-      var footer = content.footer || {};
-      if(Array.isArray(footer.links)){
-        var fLinks = qa("footer .footer-links li a");
-        for (var fl=0; fl<fLinks.length; fl++){
-          var link = footer.links[fl] || null;
-          if(!link) continue;
-          if(link.label) setText(fLinks[fl], link.label);
-          if(link.href) fLinks[fl].setAttribute("href", link.href);
-        }
-      }
-      if(footer.copyright) setText(q("footer .footer-copy"), footer.copyright);
-
-      applySectionEnabled(content.page || {});
-      applySectionBackgrounds(content);
-    } catch(e){}
-  }
-
-  function closeMenu(){
-    var menu = document.getElementById("mobile-menu");
-    var btn = document.getElementById("hamburger");
-    if(menu) menu.classList.remove("open");
-    if(btn) btn.classList.remove("open");
-  }
-
-  function handleSubmit(){
-    try{
-      var fname = (document.getElementById("fname") || {}).value || "";
-      var lname = (document.getElementById("lname") || {}).value || "";
-      var email = (document.getElementById("email") || {}).value || "";
-      var revenue = (document.getElementById("revenue") || {}).value || "";
-      var message = (document.getElementById("bottleneck") || {}).value || "";
-
-      if(!fname || !email){
-        alert("Please fill in your name and email to apply.");
+  function bindContactForm(content){
+    var btn = q("#contact .form-submit");
+    if(!btn || btn.dataset.submitBound) return;
+    btn.dataset.submitBound = "1";
+    var status = document.createElement("div");
+    status.id = "shaditz-form-status";
+    status.style.marginTop = "16px";
+    status.style.fontSize = "13px";
+    status.style.letterSpacing = "1px";
+    btn.parentNode.insertBefore(status, btn.nextSibling);
+    btn.addEventListener("click", function(){
+      var data = (window.__SHADITZ_CURRENT__ && window.__SHADITZ_CURRENT__.shaditz) || {};
+      var contact = data.contact || {};
+      var inputs = qa("#contact .contact-right .form-input");
+      var textarea = q("#contact .contact-right .form-textarea");
+      var name = inputs[0] ? String(inputs[0].value || "").trim() : "";
+      var email = inputs[1] ? String(inputs[1].value || "").trim() : "";
+      var project = inputs[2] ? String(inputs[2].value || "").trim() : "";
+      var message = textarea ? String(textarea.value || "").trim() : "";
+      if(!name || !email || !project || !message){
+        status.style.color = "#e8c97a";
+        status.textContent = "Please complete all fields.";
         return;
       }
-
-      var btn = qa(".form-submit")[0];
-      if(btn){ btn.disabled = true; btn.textContent = "Submitting…"; }
+      btn.disabled = true;
+      btn.textContent = contact.loadingText || "Sending...";
+      status.textContent = "";
       fetch("/api/leads", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ first_name: String(fname), last_name: String(lname), email: String(email), revenue: revenue ? String(revenue) : null, message: message ? String(message) : null })
+        body: JSON.stringify({ name: name, email: email, business_type: project, message: message })
       }).then(function(r){
-        if(!r.ok) throw new Error("lead_submit_failed");
+        if(!r.ok) throw new Error("submit_failed");
         return r.json();
       }).then(function(){
-        var fc = document.getElementById("form-content");
-        var fs = document.getElementById("form-success");
-        if(fc) fc.style.display = "none";
-        if(fs) fs.style.display = "block";
+        status.style.color = "#e8c97a";
+        status.textContent = contact.successText || "Message sent.";
+        inputs.forEach(function(input){ input.value = ""; });
+        if(textarea) textarea.value = "";
       }).catch(function(){
-        alert("Something went wrong. Please try again.");
+        status.style.color = "#e03030";
+        status.textContent = contact.errorText || "Something went wrong. Please try again.";
       }).finally(function(){
-        if(btn){ btn.disabled = false; btn.textContent = "Submit Application →"; }
+        btn.disabled = false;
+        btn.textContent = contact.submitText || "Send Message →";
       });
+    });
+  }
+  function applyContent(content){
+    try{
+      if(!content) return;
+      window.__SHADITZ_CURRENT__ = content;
+      var data = content.shaditz || {};
+      renderNav(data);
+      renderHero(data);
+      renderShowreel(data);
+      renderServices(data);
+      renderPortfolio(data);
+      renderTools(data);
+      renderProcess(data);
+      renderTestimonials(data);
+      renderPricing(data);
+      renderContact(data);
+      renderFooter(data);
+      ["hero","showreel","services","portfolio","tools","process","testimonials","pricing","contact"].forEach(function(type){
+        applyBackground(content, type);
+      });
+      applyOrderAndVisibility(content);
+      bindContactForm(content);
+      bindCursor();
+      refreshReveal();
     } catch(e){
-      alert("Something went wrong. Please try again.");
+      console.error("Shaditz renderer failed", e);
     }
   }
-
-  window.closeMenu = closeMenu;
-  window.handleSubmit = handleSubmit;
-
+  var sectionSelectorMap = {};
   window.addEventListener("message", function(e){
     if(e.origin !== window.location.origin) return;
     var data = e.data || {};
-    if(data.type === "shaditz_builder_preview" && data.content){
+    if((data.type === "shaditz_builder_preview" || data.type === "cf_rebuilt_apply") && data.content){
       applyContent(data.content);
-      return;
-    }
-    if(data.type === "cf_rebuilt_apply" && data.content){
-      applyContent(data.content);
-      return;
     }
   });
-
-  document.addEventListener("click", function(e){
-    var a = e.target && e.target.closest ? e.target.closest("a") : null;
-    if(!a) return;
-    var href = a.getAttribute("href") || "";
-    if(href && href.charAt(0) === "#"){ closeMenu(); }
-  }, true);
-
-  try{
-    applyContent(window.__CF_REBUILT_INITIAL__);
-  } catch(e){}
+  try{ applyContent(window.__SHADITZ_INITIAL__); } catch(e){}
 })();
 </script>
 `;
 
-    const initialVar = `<script>window.__CF_REBUILT_INITIAL__ = JSON.parse(${JSON.stringify(jsonForInline(initial))});</script>`;
+    const initialVar = `<script>window.__SHADITZ_INITIAL__ = JSON.parse(${JSON.stringify(jsonForInline(initial))});</script>`;
     const deviceVar = `<script>document.documentElement.dataset.device=${JSON.stringify(device)};</script>`;
     const customCssTag = customCss.length
-      ? `<style id="cf-rebuilt-custom-css">${escapeInlineRawText(customCss)}</style>`
+      ? `<style id="shaditz-custom-css">${escapeInlineRawText(customCss)}</style>`
       : "";
     const customJsTag = customJs.length
-      ? `<script id="cf-rebuilt-custom-js">(function(){\n${escapeInlineRawText(customJs)}\n})();</script>`
+      ? `<script id="shaditz-custom-js">(function(){\n${escapeInlineRawText(customJs)}\n})();</script>`
       : "";
 
     let out = baseTemplate;
@@ -566,11 +509,11 @@ export function RebuiltLandingFrame({ content, templateHtml, device = "desktop",
   return (
     <iframe
       ref={iframeRef}
-      title="Rebuilt landing"
+      title="Shaditz landing"
       className={className}
-      data-cf-rebuilt="true"
+      data-shaditz-landing="true"
       sandbox="allow-scripts allow-forms allow-same-origin allow-popups"
-      style={{ width: "100%", height, border: "none", background: "#0A0A0A" }}
+      style={{ width: "100%", height, border: "none", background: "#080808" }}
       srcDoc={srcDoc}
     />
   );

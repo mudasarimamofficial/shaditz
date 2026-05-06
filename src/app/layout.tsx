@@ -39,13 +39,14 @@ function escapeInlineRawText(value: string) {
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getHomepageContent();
-  const brand = compactText(content.header?.brandText) || "Shaditz";
-  const promise = compactText(`${content.hero?.heading?.prefix || ""} ${content.hero?.heading?.highlight || ""}`);
+  const brand = compactText(content.shaditz?.footer?.logo) || compactText(content.header?.brandText) || "Shaditz";
+  const promise = compactText(content.shaditz?.hero?.subtitle);
   const title = promise ? `${brand} | ${promise}` : brand;
   const description =
+    compactText(content.shaditz?.hero?.subtitle) ||
     compactText(content.hero?.subcopy) ||
     compactText(content.application?.subcopy) ||
-    "Shaditz helps premium coaches build predictable client acquisition systems.";
+    "Shaditz is the portfolio of Shaher Yar, video editor.";
   const faviconHref =
     content.site?.favicon?.url ||
     "/favicon.png";
@@ -132,7 +133,7 @@ export default async function RootLayout({
         />
         <ThemeScript />
       </head>
-      <body className="min-h-full flex flex-col bg-[var(--cf-bg)] text-[var(--cf-text)]">
+      <body className="min-h-full flex flex-col bg-[#080808] text-[var(--cf-text)]">
         {children}
         {customJs.length ? (
           <script
