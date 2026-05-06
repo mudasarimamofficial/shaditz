@@ -96,15 +96,19 @@ export function RebuiltLandingFrame({
   }
   function sectionSelector(type){
     return {
+      loader: "#loader",
       nav: "nav",
+      whatsapp: ".wa-float",
       hero: "#home",
+      marquee: "#marquee",
+      about: "#about",
       showreel: "#reel",
       services: "#services",
       portfolio: "#work",
-      tools: "#tools",
       process: "#process",
-      testimonials: "#testimonials",
-      pricing: "#pricing",
+      reviews: "#reviews",
+      testimonials: "#reviews",
+      tools: "#tools",
       contact: "#contact",
       footer: "footer"
     }[type] || "";
@@ -165,7 +169,7 @@ export function RebuiltLandingFrame({
     return raw;
   }
   function renderNav(data){
-    setText(q(".nav-logo"), data.nav && data.nav.logo);
+    setText(q(".logo"), data.nav && data.nav.logo);
     var links = arr(data.nav && data.nav.links);
     var root = q(".nav-links");
     if(root){
@@ -173,45 +177,36 @@ export function RebuiltLandingFrame({
         return '<li><a href="' + esc(link.href || "#") + '">' + esc(link.label) + "</a></li>";
       }).join("");
     }
-    var cta = q(".nav-cta");
+    var cta = q(".nav-wa");
     if(cta && data.nav && data.nav.cta){
-      setText(cta, data.nav.cta.label);
+      setText(cta, data.nav.cta.label || data.nav.cta.text);
       setHref(cta, data.nav.cta.href);
     }
   }
   function renderHero(data){
     var hero = data.hero || {};
-    setText(q(".hero-eyebrow"), hero.eyebrow);
-    var title = q(".hero-title");
-    if(title) title.innerHTML = esc(hero.titleLine1) + "<br><span>" + esc(hero.titleHighlight) + "</span>";
-    setText(q(".hero-subtitle"), hero.subtitle);
-    var buttons = qa(".hero-actions a");
+    setText(q(".hero-tag"), hero.eyebrow || hero.badgeText);
+    var title = q(".hero-name");
+    if(title) title.innerHTML = esc(hero.titleLine1 || "SHA") + "<span>" + esc(hero.titleHighlight || "DITZ") + "</span>";
+    setText(q(".hero-role"), hero.subtitle);
+    var buttons = qa(".hero-cta-row a");
     if(buttons[0] && hero.primaryCta){ setText(buttons[0], hero.primaryCta.label); setHref(buttons[0], hero.primaryCta.href); }
     if(buttons[1] && hero.secondaryCta){ setText(buttons[1], hero.secondaryCta.label); setHref(buttons[1], hero.secondaryCta.href); }
     var stats = arr(hero.stats);
-    var statsRoot = q(".hero-stats");
+    var statsRoot = q(".hero-stats-row");
     if(statsRoot){
       statsRoot.innerHTML = stats.map(function(stat){
-        return '<div><div class="stat-num">' + esc(stat.value) + '</div><div class="stat-label">' + esc(stat.label) + "</div></div>";
+        return '<div class="hstat"><div class="hstat-num">' + esc(stat.value) + '</div><div class="hstat-lbl">' + esc(stat.label) + "</div></div>";
       }).join("");
     }
-    var scroll = q(".scroll-indicator");
-    if(scroll){
-      scroll.innerHTML = '<div class="scroll-line"></div>' + esc(hero.scrollText || "");
-    }
-    var heroEl = q("#home");
-    if(heroEl && hero.background && hero.background.url){
-      heroEl.style.backgroundImage = "url(" + hero.background.url + ")";
-      heroEl.style.backgroundSize = "cover";
-      heroEl.style.backgroundPosition = "center";
-    }
+    setText(q(".hero-scroll"), hero.scrollText || "Scroll Down");
   }
   function renderShowreel(data){
     var reel = data.showreel || {};
-    setText(q("#reel .section-label"), reel.label);
-    setTitle(q("#reel .section-title"), reel.title);
+    setText(q("#reel .s-label"), reel.label);
+    setTitle(q("#reel .s-title"), reel.title);
     setText(q("#reel .reel-note"), reel.note);
-    var root = q("#reel .reel-container");
+    var root = q("#reel .reel-embed");
     if(!root) return;
     var url = text(reel.videoUrl).trim();
     if(url){
@@ -222,66 +217,65 @@ export function RebuiltLandingFrame({
         root.innerHTML = '<iframe src="' + esc(embed) + '" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>';
       }
     } else {
-      root.innerHTML = '<div class="reel-placeholder"><div class="play-btn"></div><p class="reel-text">' + esc(reel.placeholderText || "SHOWREEL") + "</p></div>";
+      root.innerHTML = '<div class="reel-placeholder"><div class="play-ring"><div class="play-arrow"></div></div><p class="reel-label">' + esc(reel.placeholderText || "PLAY SHOWREEL") + "</p></div>";
     }
   }
   function renderServices(data){
     var sec = data.services || {};
-    setText(q("#services .section-label"), sec.label);
-    setTitle(q("#services .section-title"), sec.title);
-    var root = q("#services .services-grid");
+    setText(q("#services .s-label"), sec.label);
+    setTitle(q("#services .s-title"), sec.title);
+    var root = q("#services .services-list");
     if(!root) return;
-    root.innerHTML = arr(sec.items).map(function(item){
-      var tags = arr(item.tags).map(function(tag){ return '<span class="tag">' + esc(tag) + "</span>"; }).join("");
-      return '<div class="service-card reveal"><span class="service-icon">' + esc(item.icon) + '</span><div class="service-num">' + esc(item.number) + '</div><h3 class="service-title">' + esc(item.title) + '</h3><p class="service-desc">' + esc(item.description) + '</p><div class="service-tags">' + tags + "</div></div>";
+    root.innerHTML = arr(sec.items).map(function(item, idx){
+      return '<div class="service-row"><span class="srv-num">' + esc(item.number || "") + '</span><span class="srv-name">' + esc(item.title) + '</span><span class="srv-desc">' + esc(item.description) + '</span><span class="srv-price">' + esc(item.price || "") + "</span></div>";
     }).join("");
   }
   function renderPortfolio(data){
     var sec = data.portfolio || {};
-    setText(q("#work .section-label"), sec.label);
-    setTitle(q("#work .section-title"), sec.title);
-    var root = q("#work .portfolio-grid");
+    setText(q("#work .s-label"), sec.label);
+    setTitle(q("#work .s-title"), sec.title);
+    var root = q("#work .work-grid");
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
       var media = item.image && item.image.url
-        ? '<img class="portfolio-thumb" src="' + esc(item.image.url) + '" alt="' + esc(item.title) + '">'
-        : '<div class="portfolio-thumb-placeholder"><span class="portfolio-placeholder-icon">' + esc(item.icon || "🎬") + "</span></div>";
+        ? '<img class="wi-img" src="' + esc(item.image.url) + '" alt="' + esc(item.title) + '">'
+        : '<div class="wi-placeholder wp' + esc(String((idx%5)+1)) + '"><span class="wp-icon">' + esc(item.icon || "🎬") + "</span></div>";
       var body = media +
-        '<div class="portfolio-always-text"><div class="portfolio-always-cat">' + esc(item.category) + '</div><div class="portfolio-always-name">' + esc(item.title) + '</div></div>' +
-        '<div class="portfolio-overlay"><div class="portfolio-cat">' + esc(item.meta || item.category) + '</div><div class="portfolio-name">' + esc(item.title) + "</div></div>";
-      var cls = item.wide ? "portfolio-item wide" : "portfolio-item";
+        '<div class="wi-num">' + esc(item.number || String(idx + 1).padStart(2,"0")) + '</div>' +
+        '<div class="wi-always"><div class="wi-always-cat">' + esc(item.category) + '</div><div class="wi-always-title">' + esc(item.title) + '</div></div>' +
+        '<div class="wi-overlay"><div class="wi-cat">' + esc(item.meta || item.category) + '</div><div class="wi-title">' + esc(item.title) + "</div></div>";
+      var cls = "wi";
       if(item.href) return '<a class="' + cls + '" href="' + esc(item.href) + '">' + body + "</a>";
       return '<div class="' + cls + '">' + body + "</div>";
     }).join("");
   }
   function renderTools(data){
     var sec = data.tools || {};
-    setText(q("#tools .section-label"), sec.label);
-    setTitle(q("#tools .section-title"), sec.title);
-    var root = q("#tools .tools-grid");
+    setText(q("#tools .s-label"), sec.label);
+    var root = q("#tools .tools-row");
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
-      return '<div class="tool-card"><div class="tool-icon">' + esc(item.icon) + '</div><div class="tool-name">' + esc(item.name) + "</div></div>";
+      return '<div class="tool-item"><span class="tool-icon2">' + esc(item.icon) + '</span><span class="tool-name2">' + esc(item.name) + "</span></div>";
     }).join("");
   }
   function renderProcess(data){
     var sec = data.process || {};
-    setText(q("#process .section-label"), sec.label);
-    setTitle(q("#process .section-title"), sec.title);
-    var root = q("#process .process-steps");
+    setText(q("#process .s-label"), sec.label);
+    setTitle(q("#process .s-title"), sec.title);
+    var root = q("#process .process-track");
     if(!root) return;
     root.innerHTML = arr(sec.steps).map(function(step){
-      return '<div class="process-step"><div class="step-num">' + esc(step.number) + '</div><h3 class="step-title">' + esc(step.title) + '</h3><p class="step-desc">' + esc(step.description) + "</p></div>";
+      return '<div class="pstep"><div class="pstep-circle">' + esc(step.number) + '</div><h3 class="pstep-title">' + esc(step.title) + '</h3><p class="pstep-desc">' + esc(step.description) + "</p></div>";
     }).join("");
   }
   function renderTestimonials(data){
-    var sec = data.testimonials || {};
-    setText(q("#testimonials .section-label"), sec.label);
-    setTitle(q("#testimonials .section-title"), sec.title);
-    var root = q("#testimonials .testimonials-grid");
+    var sec = data.testimonials || data.reviews || {};
+    setText(q("#reviews .s-label"), sec.label);
+    setTitle(q("#reviews .s-title"), sec.title);
+    var root = q("#reviews .reviews-grid");
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
-      return '<div class="testimonial-card reveal"><div class="quote-mark">"</div><p class="quote-text">' + esc(item.quote) + '</p><div class="quote-author"><div class="author-avatar">' + esc(item.avatar || "👤") + '</div><div><div class="stars">' + esc(item.stars || "★★★★★") + '</div><div class="author-name">' + esc(item.author) + '</div><div class="author-title">' + esc(item.role) + "</div></div></div></div>";
+      return '<div class="review-card"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><p class="review-text">' + esc(item.quote) + '</p><div class="review-author"><div class="reviewer-avatar">' + esc(item.avatar || "👤") + '</div><div><div class="reviewer-name">' + esc(item.author) + '</div><div class="reviewer-info">' + esc(item.role) + '</div><div class="review-platform">' + esc(item.platform || "") + "</div></div></div></div>";
     }).join("");
   }
   function renderPricing(data){
@@ -299,41 +293,74 @@ export function RebuiltLandingFrame({
   }
   function renderContact(data){
     var sec = data.contact || {};
-    setText(q("#contact .contact-left .section-label"), sec.label);
-    setTitle(q("#contact .contact-left .section-title"), sec.title);
-    setText(q("#contact .contact-right .section-label"), sec.formLabel);
-    var infoRoot = q("#contact .contact-info");
+    setText(q("#contact .contact-left .s-label"), sec.label);
+    setTitle(q("#contact .contact-left .s-title"), sec.title);
+    setText(q("#contact .contact-right .s-label"), sec.formLabel);
+    var infoRoot = q("#contact .contact-info-items");
     if(infoRoot){
       infoRoot.innerHTML = arr(sec.info).map(function(item){
         var value = item.href ? '<a href="' + esc(item.href) + '">' + esc(item.value) + "</a>" : esc(item.value);
-        return '<div class="contact-item"><span class="contact-icon">' + esc(item.icon) + '</span><div><div class="contact-label">' + esc(item.label) + '</div><div class="contact-value">' + value + "</div></div></div>";
+        return '<div class="ci-item"><div class="ci-icon">' + esc(item.icon) + '</div><div><div class="ci-label">' + esc(item.label) + '</div><div class="ci-val">' + value + "</div></div></div>";
       }).join("");
     }
     var fields = sec.fields || {};
-    var labels = qa("#contact .contact-right .form-label");
-    var inputs = qa("#contact .contact-right .form-input");
-    var textarea = q("#contact .contact-right .form-textarea");
-    setText(labels[0], fields.nameLabel);
-    setText(labels[1], fields.emailLabel);
-    setText(labels[2], fields.projectLabel);
-    setText(labels[3], fields.messageLabel);
-    if(inputs[0]) inputs[0].setAttribute("placeholder", text(fields.namePlaceholder));
-    if(inputs[1]) inputs[1].setAttribute("placeholder", text(fields.emailPlaceholder));
-    if(inputs[2]) inputs[2].setAttribute("placeholder", text(fields.projectPlaceholder));
-    if(textarea) textarea.setAttribute("placeholder", text(fields.messagePlaceholder));
-    var btn = q("#contact .form-submit");
+    var inputs = qa("#contact .contact-right .fi");
+    if(inputs[0]) inputs[0].setAttribute("placeholder", text(fields.namePlaceholder || "Your Name"));
+    if(inputs[1]) inputs[1].setAttribute("placeholder", text(fields.emailPlaceholder || "your@email.com"));
+    if(inputs[2]) inputs[2].setAttribute("placeholder", text(fields.projectPlaceholder || "Project Type"));
+    if(inputs[3]) inputs[3].setAttribute("placeholder", text(fields.budgetPlaceholder || "Budget Range"));
+    if(inputs[4]) inputs[4].setAttribute("placeholder", text(fields.messagePlaceholder || "Tell me about your project..."));
+    var btn = q("#contact .fsubmit");
     if(btn) setText(btn, sec.submitText || "Send Message →");
   }
   function renderFooter(data){
     var sec = data.footer || {};
-    setText(q("footer .footer-logo"), sec.logo);
-    setText(q("footer .footer-copy"), sec.copyright);
-    var root = q("footer .social-links");
+    setText(q("footer .foot-logo"), sec.logo);
+    setText(q("footer .foot-copy"), sec.copyright);
+    var root = q("footer .foot-socials");
     if(root){
       root.innerHTML = arr(sec.socialLinks).map(function(link){
         return '<a href="' + esc(link.href || "#") + '" title="' + esc(link.label) + '">' + esc(link.label) + "</a>";
       }).join("");
     }
+  }
+  function renderMarquee(data){
+    var root = q("#marquee .marquee-track");
+    if(!root || !Array.isArray(data.marqueeItems)) return;
+    var items = data.marqueeItems;
+    root.innerHTML = items.concat(items).map(function(item){
+      return '<span class="marquee-item">' + esc(item) + '</span><span class="marquee-dot"> ✦ </span>';
+    }).join("");
+  }
+  function renderAbout(data){
+    var sec = data.about || {};
+    setText(q("#about .s-label"), sec.label);
+    setTitle(q("#about .s-title"), sec.title);
+    var paragraphs = qa("#about .about-text p:not(.s-label)");
+    var p = arr(sec.paragraphs);
+    paragraphs.forEach(function(node, idx){
+      if(p[idx]) node.innerHTML = esc(p[idx]);
+    });
+    var skills = q("#about .about-skills");
+    if(skills && Array.isArray(sec.skills)){
+      skills.innerHTML = sec.skills.map(function(skill){
+        return '<span class="skill-chip">' + esc(skill) + "</span>";
+      }).join("");
+    }
+    var avail = q("#about .avail-badge");
+    if(avail && sec.availabilityText){
+      avail.innerHTML = '<span class="avail-dot"></span>' + esc(sec.availabilityText);
+    }
+  }
+  function renderWhatsapp(data){
+    var wa = data.whatsapp || {};
+    var number = text(wa.number || "92XXXXXXXXXX").replace(/[^0-9]/g, "");
+    var bubble = q(".wa-bubble");
+    if(bubble) setText(bubble, wa.bubbleText || "Chat on WhatsApp");
+    var links = qa(".wa-btn, .nav-wa, .wa-contact-btn");
+    links.forEach(function(link){
+      setHref(link, "https://wa.me/" + number + "?text=" + encodeURIComponent(wa.message || "Hi Shaditz! I want to discuss a project."));
+    });
   }
   function applyOrderAndVisibility(content){
     var page = content && content.page ? content.page : {};
@@ -341,7 +368,7 @@ export function RebuiltLandingFrame({
     var byType = {};
     sections.forEach(function(section){ if(section && section.type) byType[section.type] = section; });
     Object.keys(sectionSelectorMap).forEach(function(type){});
-    ["nav","hero","showreel","services","portfolio","tools","process","testimonials","pricing","contact","footer"].forEach(function(type){
+    ["loader","nav","whatsapp","hero","marquee","about","showreel","services","portfolio","process","reviews","tools","contact","footer"].forEach(function(type){
       var el = q(sectionSelector(type));
       if(!el) return;
       var section = byType[type];
@@ -394,7 +421,7 @@ export function RebuiltLandingFrame({
     });
   }
   function bindContactForm(content){
-    var btn = q("#contact .form-submit");
+      var btn = q("#contact .fsubmit");
     if(!btn || btn.dataset.submitBound) return;
     btn.dataset.submitBound = "1";
     var status = document.createElement("div");
@@ -406,12 +433,12 @@ export function RebuiltLandingFrame({
     btn.addEventListener("click", function(){
       var data = (window.__SHADITZ_CURRENT__ && window.__SHADITZ_CURRENT__.shaditz) || {};
       var contact = data.contact || {};
-      var inputs = qa("#contact .contact-right .form-input");
-      var textarea = q("#contact .contact-right .form-textarea");
+      var inputs = qa("#contact .contact-right .fi");
       var name = inputs[0] ? String(inputs[0].value || "").trim() : "";
       var email = inputs[1] ? String(inputs[1].value || "").trim() : "";
       var project = inputs[2] ? String(inputs[2].value || "").trim() : "";
-      var message = textarea ? String(textarea.value || "").trim() : "";
+      var budget = inputs[3] ? String(inputs[3].value || "").trim() : "";
+      var message = inputs[4] ? String(inputs[4].value || "").trim() : "";
       if(!name || !email || !project || !message){
         status.style.color = "#e8c97a";
         status.textContent = "Please complete all fields.";
@@ -423,7 +450,7 @@ export function RebuiltLandingFrame({
       fetch("/api/leads", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name: name, email: email, business_type: project, message: message })
+        body: JSON.stringify({ name: name, email: email, business_type: project, revenue: budget, message: message })
       }).then(function(r){
         if(!r.ok) throw new Error("submit_failed");
         return r.json();
@@ -431,7 +458,7 @@ export function RebuiltLandingFrame({
         status.style.color = "#e8c97a";
         status.textContent = contact.successText || "Message sent.";
         inputs.forEach(function(input){ input.value = ""; });
-        if(textarea) textarea.value = "";
+        if(inputs[4]) inputs[4].value = "";
       }).catch(function(){
         status.style.color = "#e03030";
         status.textContent = contact.errorText || "Something went wrong. Please try again.";
@@ -446,18 +473,21 @@ export function RebuiltLandingFrame({
       if(!content) return;
       window.__SHADITZ_CURRENT__ = content;
       var data = content.shaditz || {};
+      data.whatsapp = data.whatsapp || content.whatsapp || {};
       renderNav(data);
       renderHero(data);
       renderShowreel(data);
+      renderAbout(data);
       renderServices(data);
       renderPortfolio(data);
       renderTools(data);
       renderProcess(data);
       renderTestimonials(data);
-      renderPricing(data);
       renderContact(data);
       renderFooter(data);
-      ["hero","showreel","services","portfolio","tools","process","testimonials","pricing","contact"].forEach(function(type){
+      renderMarquee(data);
+      renderWhatsapp(data);
+      ["hero","about","showreel","services","portfolio","tools","process","reviews","contact"].forEach(function(type){
         applyBackground(content, type);
       });
       applyOrderAndVisibility(content);

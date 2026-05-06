@@ -39,42 +39,51 @@ type Props = {
 type DeviceMode = "desktop" | "tablet" | "mobile";
 type PageSection = NonNullable<HomepageContent["page"]>["sections"][number];
 type SectionType =
+  | "loader"
   | "nav"
+  | "whatsapp"
   | "hero"
+  | "marquee"
+  | "about"
   | "showreel"
   | "services"
   | "portfolio"
-  | "tools"
   | "process"
-  | "testimonials"
-  | "pricing"
+  | "reviews"
+  | "tools"
   | "contact"
   | "footer";
 
 const SECTION_TYPES: SectionType[] = [
+  "loader",
   "nav",
+  "whatsapp",
   "hero",
+  "marquee",
+  "about",
   "showreel",
   "services",
   "portfolio",
-  "tools",
   "process",
-  "testimonials",
-  "pricing",
+  "reviews",
+  "tools",
   "contact",
   "footer",
 ];
 
 const SECTION_LABELS: Record<SectionType, string> = {
+  loader: "Loader",
   nav: "Nav",
+  whatsapp: "WhatsApp Float",
   hero: "Hero",
+  marquee: "Marquee",
+  about: "About",
   showreel: "Showreel",
   services: "Services",
   portfolio: "Portfolio",
-  tools: "Tools / Software",
   process: "Process",
-  testimonials: "Testimonials",
-  pricing: "Pricing",
+  reviews: "Reviews",
+  tools: "Tools",
   contact: "Contact",
   footer: "Footer",
 };
@@ -84,7 +93,8 @@ function clone<T>(value: T): T {
 }
 
 function sectionId(type: SectionType) {
-  return type === "portfolio" ? "work" : type;
+  if (type === "portfolio") return "work";
+  return type;
 }
 
 function defaultSection(type: SectionType): PageSection {
@@ -159,15 +169,18 @@ function mergeContent(raw: Partial<HomepageContent> | null | undefined): Homepag
 
 function sectionSubtitle(content: HomepageContent, type: SectionType) {
   const data = content.shaditz || shaditzLandingDefaults;
+  if (type === "loader") return "LOADING PORTFOLIO";
   if (type === "nav") return data.nav.logo;
+  if (type === "whatsapp") return data.whatsapp?.number || "";
   if (type === "hero") return data.hero.subtitle;
+  if (type === "marquee") return `${(data.marqueeItems || []).length} items`;
+  if (type === "about") return data.about?.title || "";
   if (type === "showreel") return data.showreel.videoUrl || data.showreel.placeholderText;
   if (type === "services") return `${data.services.items.length} services`;
   if (type === "portfolio") return `${data.portfolio.items.length} projects`;
-  if (type === "tools") return `${data.tools.items.length} tools`;
   if (type === "process") return `${data.process.steps.length} steps`;
-  if (type === "testimonials") return `${data.testimonials.items.length} quotes`;
-  if (type === "pricing") return `${data.pricing.tiers.length} tiers`;
+  if (type === "reviews") return `${data.testimonials.items.length} quotes`;
+  if (type === "tools") return `${data.tools.items.length} tools`;
   if (type === "contact") return data.contact.formLabel;
   return data.footer.logo;
 }
@@ -340,7 +353,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
   }
 
   function renderBackgroundControls(type: SectionType) {
-    if (type === "nav" || type === "footer") return null;
+    if (type === "loader" || type === "nav" || type === "whatsapp" || type === "marquee" || type === "footer") return null;
     const settings = (selectedSection.settings || {}) as Record<string, any>;
     const image = String(settings.backgroundImage || settings.background?.url || "");
     return (
@@ -397,6 +410,111 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
           placeholder="rgba(0,0,0,0.35)"
         />
       </PanelGroup>
+    );
+  }
+
+  function renderLoaderInspector() {
+    return (
+      <PanelGroup title="Loader">
+        <div className="text-sm text-white/65">
+          Loader visuals are controlled by the cinematic template. Use section visibility to show/hide loader behavior.
+        </div>
+      </PanelGroup>
+    );
+  }
+
+  function renderWhatsappInspector() {
+    const wa = shaditz.whatsapp || {};
+    return (
+      <PanelGroup title="WhatsApp">
+        <Input
+          label="Number (digits only)"
+          value={wa.number || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), number: e.target.value })}
+        />
+        <Input
+          label="Bubble text"
+          value={wa.bubbleText || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), bubbleText: e.target.value })}
+        />
+        <Textarea
+          label="Prefill message"
+          rows={2}
+          value={wa.message || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), message: e.target.value })}
+        />
+      </PanelGroup>
+    );
+  }
+
+  function renderMarqueeInspector() {
+    return (
+      <PanelGroup title="Marquee">
+        <Textarea
+          label="Items (one per line)"
+          rows={8}
+          value={(shaditz.marqueeItems || []).join("\n")}
+          onChange={(e) =>
+            updateShaditz(
+              "marqueeItems",
+              e.target.value
+                .split("\n")
+                .map((item) => item.trim())
+                .filter(Boolean),
+            )
+          }
+        />
+      </PanelGroup>
+    );
+  }
+
+  function renderAboutInspector() {
+    const about = shaditz.about || {};
+    const paragraphs = about.paragraphs || [];
+    return (
+      <>
+        <PanelGroup title="About Header">
+          <Input
+            label="Label"
+            value={about.label || ""}
+            onChange={(e) => updateShaditz("about", { ...about, label: e.target.value })}
+          />
+          <Textarea
+            label="Title"
+            rows={4}
+            value={about.title || ""}
+            onChange={(e) => updateShaditz("about", { ...about, title: e.target.value })}
+          />
+        </PanelGroup>
+        <PanelGroup title="About Body">
+          <Textarea
+            label="Paragraphs (one per line)"
+            rows={6}
+            value={paragraphs.join("\n")}
+            onChange={(e) =>
+              updateShaditz("about", {
+                ...about,
+                paragraphs: e.target.value.split("\n").map((line) => line.trim()).filter(Boolean),
+              })
+            }
+          />
+          <Input
+            label="Availability text"
+            value={about.availabilityText || ""}
+            onChange={(e) => updateShaditz("about", { ...about, availabilityText: e.target.value })}
+          />
+          <Input
+            label="Skills (comma separated)"
+            value={(about.skills || []).join(", ")}
+            onChange={(e) =>
+              updateShaditz("about", {
+                ...about,
+                skills: e.target.value.split(",").map((item) => item.trim()).filter(Boolean),
+              })
+            }
+          />
+        </PanelGroup>
+      </>
     );
   }
 
@@ -775,73 +893,6 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
     );
   }
 
-  function renderPricingInspector() {
-    return (
-      <>
-        <PanelGroup title="Header">
-          <Input label="Label" value={shaditz.pricing.label} onChange={(e) => updateShaditz("pricing", { ...shaditz.pricing, label: e.target.value })} />
-          <Input label="Title" value={shaditz.pricing.title} onChange={(e) => updateShaditz("pricing", { ...shaditz.pricing, title: e.target.value })} />
-        </PanelGroup>
-        <PanelGroup title="Tiers">
-          {shaditz.pricing.tiers.map((tier, index) => (
-            <div key={index} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-3">
-              <div className="grid grid-cols-2 gap-3">
-                <Input label="Name" value={tier.name} onChange={(e) => {
-                  const tiers = [...shaditz.pricing.tiers];
-                  tiers[index] = { ...tier, name: e.target.value };
-                  updateShaditz("pricing", { ...shaditz.pricing, tiers });
-                }} />
-                <Input label="Price" value={tier.price} onChange={(e) => {
-                  const tiers = [...shaditz.pricing.tiers];
-                  tiers[index] = { ...tier, price: e.target.value };
-                  updateShaditz("pricing", { ...shaditz.pricing, tiers });
-                }} />
-              </div>
-              <Input label="Unit" value={tier.unit} onChange={(e) => {
-                const tiers = [...shaditz.pricing.tiers];
-                tiers[index] = { ...tier, unit: e.target.value };
-                updateShaditz("pricing", { ...shaditz.pricing, tiers });
-              }} />
-              <Textarea label="Features" rows={4} value={tier.features.join("\n")} onChange={(e) => {
-                const tiers = [...shaditz.pricing.tiers];
-                tiers[index] = { ...tier, features: e.target.value.split("\n").map((x) => x.trim()).filter(Boolean) };
-                updateShaditz("pricing", { ...shaditz.pricing, tiers });
-              }} />
-              <div className="grid grid-cols-2 gap-3">
-                <Input label="Button text" value={tier.cta.label} onChange={(e) => {
-                  const tiers = [...shaditz.pricing.tiers];
-                  tiers[index] = { ...tier, cta: { ...tier.cta, label: e.target.value } };
-                  updateShaditz("pricing", { ...shaditz.pricing, tiers });
-                }} />
-                <Input label="Button href" value={tier.cta.href} onChange={(e) => {
-                  const tiers = [...shaditz.pricing.tiers];
-                  tiers[index] = { ...tier, cta: { ...tier.cta, href: e.target.value } };
-                  updateShaditz("pricing", { ...shaditz.pricing, tiers });
-                }} />
-              </div>
-              <InlineActions>
-                <Button type="button" variant="secondary" className="h-9" onClick={() => {
-                  const tiers = [...shaditz.pricing.tiers];
-                  tiers[index] = { ...tier, featured: !tier.featured };
-                  updateShaditz("pricing", { ...shaditz.pricing, tiers });
-                }}>
-                  {tier.featured ? "Unfeature" : "Feature"}
-                </Button>
-                <Button type="button" variant="secondary" className="h-9" onClick={() => updateShaditz("pricing", { ...shaditz.pricing, tiers: shaditz.pricing.tiers.filter((_, i) => i !== index) })}>
-                  Remove
-                </Button>
-              </InlineActions>
-            </div>
-          ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("pricing", { ...shaditz.pricing, tiers: [...shaditz.pricing.tiers, { name: "New Tier", price: "$0", unit: "per video", features: [], cta: { label: "Get Started", href: "#contact" } }] })}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add tier
-          </Button>
-        </PanelGroup>
-      </>
-    );
-  }
-
   function renderContactInspector() {
     return (
       <>
@@ -885,6 +936,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
           <Input label="Email placeholder" value={shaditz.contact.fields.emailPlaceholder} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...shaditz.contact.fields, emailPlaceholder: e.target.value } })} />
           <Input label="Project label" value={shaditz.contact.fields.projectLabel} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...shaditz.contact.fields, projectLabel: e.target.value } })} />
           <Input label="Project placeholder" value={shaditz.contact.fields.projectPlaceholder} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...shaditz.contact.fields, projectPlaceholder: e.target.value } })} />
+          <Input label="Budget placeholder" value={(shaditz.contact.fields as any).budgetPlaceholder || "Budget Range"} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...(shaditz.contact.fields as any), budgetPlaceholder: e.target.value } as any })} />
           <Input label="Message label" value={shaditz.contact.fields.messageLabel} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...shaditz.contact.fields, messageLabel: e.target.value } })} />
           <Textarea label="Message placeholder" rows={2} value={shaditz.contact.fields.messagePlaceholder} onChange={(e) => updateShaditz("contact", { ...shaditz.contact, fields: { ...shaditz.contact.fields, messagePlaceholder: e.target.value } })} />
         </PanelGroup>
@@ -947,15 +999,18 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
           />
         </PanelGroup>
         {renderBackgroundControls(selectedType)}
+        {selectedType === "loader" ? renderLoaderInspector() : null}
         {selectedType === "nav" ? renderNavInspector() : null}
+        {selectedType === "whatsapp" ? renderWhatsappInspector() : null}
         {selectedType === "hero" ? renderHeroInspector() : null}
+        {selectedType === "marquee" ? renderMarqueeInspector() : null}
+        {selectedType === "about" ? renderAboutInspector() : null}
         {selectedType === "showreel" ? renderShowreelInspector() : null}
         {selectedType === "services" ? renderServicesInspector() : null}
         {selectedType === "portfolio" ? renderPortfolioInspector() : null}
-        {selectedType === "tools" ? renderToolsInspector() : null}
         {selectedType === "process" ? renderProcessInspector() : null}
-        {selectedType === "testimonials" ? renderTestimonialsInspector() : null}
-        {selectedType === "pricing" ? renderPricingInspector() : null}
+        {selectedType === "reviews" ? renderTestimonialsInspector() : null}
+        {selectedType === "tools" ? renderToolsInspector() : null}
         {selectedType === "contact" ? renderContactInspector() : null}
         {selectedType === "footer" ? renderFooterInspector() : null}
       </div>

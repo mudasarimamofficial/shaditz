@@ -80,7 +80,7 @@ export async function GET(req: Request) {
   if (error) return NextResponse.json({ ok: false, message: error.message }, { status: 500 });
 
   const assets = (data || [])
-    .filter((file: any) => file?.name && (file.id || file.metadata))
+    .filter((file: any) => file?.name)
     .map((file: any) => {
       const path = `${prefix}/${file.name}`;
       const { data: publicUrl } = gate.supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);

@@ -9,6 +9,12 @@ export type ShaditzMedia = {
 };
 
 export type ShaditzLandingContent = {
+  whatsapp?: {
+    number?: string;
+    message?: string;
+    bubbleText?: string;
+  };
+  marqueeItems?: string[];
   nav: {
     logo: string;
     links: ShaditzLink[];
@@ -25,6 +31,13 @@ export type ShaditzLandingContent = {
     scrollText: string;
     background?: ShaditzMedia;
   };
+  about?: {
+    label?: string;
+    title?: string;
+    paragraphs?: string[];
+    skills?: string[];
+    availabilityText?: string;
+  };
   showreel: {
     label: string;
     title: string;
@@ -40,6 +53,7 @@ export type ShaditzLandingContent = {
       number: string;
       title: string;
       description: string;
+      price?: string;
       tags: string[];
     }[];
   };
@@ -106,6 +120,7 @@ export type ShaditzLandingContent = {
       emailPlaceholder: string;
       projectLabel: string;
       projectPlaceholder: string;
+      budgetPlaceholder?: string;
       messageLabel: string;
       messagePlaceholder: string;
     };
@@ -122,82 +137,114 @@ export type ShaditzLandingContent = {
 };
 
 export const shaditzLandingDefaults: ShaditzLandingContent = {
+  whatsapp: {
+    number: "92XXXXXXXXXX",
+    message: "Hi Shaditz! I want to discuss a project.",
+    bubbleText: "Chat on WhatsApp",
+  },
+  marqueeItems: [
+    "Video Editing",
+    "Motion Graphics",
+    "Color Grading",
+    "Reels & Shorts",
+    "After Effects",
+    "Premiere Pro",
+    "Sound Design",
+    "Brand Films",
+  ],
   nav: {
-    logo: "SY",
+    logo: "SHADITZ",
     links: [
       { label: "Work", href: "#work" },
       { label: "Services", href: "#services" },
-      { label: "Process", href: "#process" },
-      { label: "Pricing", href: "#pricing" },
+      { label: "Reviews", href: "#reviews" },
       { label: "Contact", href: "#contact" },
     ],
-    cta: { label: "Hire Me", href: "#contact" },
+    cta: { label: "📲 WhatsApp", href: "https://wa.me/92XXXXXXXXXX" },
   },
   hero: {
-    eyebrow: "Freelance Video Editor — Available Worldwide",
-    titleLine1: "SHAHER",
-    titleHighlight: "YAR",
-    subtitle: "Turning raw footage into cinematic stories that move people.",
+    eyebrow: "✦ Freelance Cinematic Editor — Available Worldwide",
+    titleLine1: "SHA",
+    titleHighlight: "DITZ",
+    subtitle: "I don't just edit videos — I craft visual experiences that move people.",
     primaryCta: { label: "View My Work", href: "#work" },
-    secondaryCta: { label: "Let's Talk", href: "#contact" },
+    secondaryCta: { label: "💬 WhatsApp Me", href: "https://wa.me/92XXXXXXXXXX" },
     stats: [
-      { value: "50+", label: "Projects Done" },
-      { value: "20+", label: "Happy Clients" },
-      { value: "3+", label: "Years Experience" },
+      { value: "50+", label: "Projects" },
+      { value: "25+", label: "Clients" },
+      { value: "3+", label: "Years" },
+      { value: "100%", label: "Satisfaction" },
     ],
-    scrollText: "Scroll to Explore",
+    scrollText: "Scroll Down",
+  },
+  about: {
+    label: "About Me",
+    title: "THE\nEDITOR\nBEHIND\nTHE LENS",
+    paragraphs: [
+      "I'm Shaditz — a freelance video editor based in Pakistan, working with international clients across YouTube, Instagram, and brand campaigns.",
+      "With 3+ years of experience in Premiere Pro & After Effects, I turn raw footage into stories that hook viewers, build brands, and drive real results.",
+      "Every frame matters. Every cut is intentional. Every project is treated like a cinematic masterpiece.",
+    ],
+    skills: ["Premiere Pro", "After Effects", "DaVinci Resolve", "Color Grading", "Motion Design", "Sound Design", "Reels / Shorts", "Brand Films"],
+    availabilityText: "Available for new projects",
   },
   showreel: {
-    label: "Showreel",
-    title: "MY LATEST\nREEL",
+    label: "Watch",
+    title: "SHOWREEL\n2024",
     videoUrl: "",
-    placeholderText: "SHOWREEL 2024",
-    note: "📌 Yahan apna YouTube ya Vimeo link paste karo — iframe se replace karo",
+    placeholderText: "PLAY SHOWREEL",
+    note: "📌 Apna YouTube ya Vimeo link yahan paste karo — iframe se replace karo upar wala div",
   },
   services: {
-    label: "What I Offer",
+    label: "What I Do",
     title: "SERVICES",
     items: [
       {
         icon: "🎬",
         number: "01",
-        title: "Video Editing",
-        description: "Professional cuts, pacing, and storytelling for YouTube, documentaries, vlogs, and branded content.",
+        title: "VIDEO EDITING",
+        description: "YouTube, documentaries, vlogs, brand content",
+        price: "From $99",
         tags: ["Premiere Pro", "YouTube", "Vlogs"],
       },
       {
         icon: "✨",
         number: "02",
-        title: "Motion Graphics",
-        description: "Eye-catching titles, lower thirds, animated logos, and visual effects that elevate your content.",
+        title: "MOTION GRAPHICS",
+        description: "Titles, lower thirds, animated logos, VFX",
+        price: "From $149",
         tags: ["After Effects", "Motion Graphics", "VFX"],
       },
       {
         icon: "🎵",
         number: "03",
-        title: "Reels & Short Form",
-        description: "High-retention Instagram Reels, TikToks, and YouTube Shorts designed to go viral.",
+        title: "REELS & SHORTS",
+        description: "High-retention vertical content for all platforms",
+        price: "From $49",
         tags: ["Reels", "TikTok", "Shorts"],
       },
       {
         icon: "🎨",
         number: "04",
-        title: "Color Grading",
-        description: "Cinematic color correction and grading to give your footage a professional, consistent look.",
+        title: "COLOR GRADING",
+        description: "Cinematic color correction & LUT application",
+        price: "From $79",
         tags: ["DaVinci Resolve", "LUTs", "Color"],
       },
       {
         icon: "🔊",
         number: "05",
-        title: "Audio Design",
-        description: "Sound design, music sync, dialogue cleanup, and audio mixing for a polished final product.",
+        title: "SOUND DESIGN",
+        description: "Audio cleanup, music sync, SFX layering",
+        price: "From $59",
         tags: ["Audio Mix", "SFX", "Music Sync"],
       },
       {
         icon: "🏢",
         number: "06",
-        title: "Corporate Videos",
-        description: "Brand films, product promos, testimonials, and event highlight reels for businesses.",
+        title: "CORPORATE FILMS",
+        description: "Product promos, testimonials, event highlights",
+        price: "From $249",
         tags: ["Brand Film", "Promo", "Corporate"],
       },
     ],
@@ -279,7 +326,7 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
   },
   testimonials: {
     label: "Client Love",
-    title: "TESTIMONIALS",
+    title: "WHAT CLIENTS\nSAY",
     items: [
       {
         quote: "Shaher Yar delivered exactly what I envisioned. His attention to detail and quick turnaround made the whole process seamless.",
@@ -349,6 +396,7 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
       emailPlaceholder: "john@company.com",
       projectLabel: "Project Type",
       projectPlaceholder: "YouTube Video, Reels, Corporate...",
+      budgetPlaceholder: "Budget Range",
       messageLabel: "Message",
       messagePlaceholder: "Tell me about your project...",
     },

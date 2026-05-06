@@ -3,15 +3,18 @@ import { homepageDefaults, type HomepageContent } from "@/content/homepage";
 type PageSection = NonNullable<HomepageContent["page"]>["sections"][number];
 
 const SHADITZ_SECTION_TYPES = new Set([
+  "loader",
   "nav",
+  "whatsapp",
   "hero",
+  "marquee",
+  "about",
   "showreel",
   "services",
   "portfolio",
-  "tools",
   "process",
-  "testimonials",
-  "pricing",
+  "reviews",
+  "tools",
   "contact",
   "footer",
 ]);
@@ -36,12 +39,5 @@ export function mergePageSectionsWithDefaults(sections?: PageSection[] | null): 
 
   if (!shaditzIncoming.length) return defaults.map(cloneSection);
 
-  const output = shaditzIncoming.map(cloneSection);
-  const seen = new Set(output.map((section) => String(section.type)));
-  for (const preset of defaults) {
-    if (seen.has(String(preset.type))) continue;
-    output.push(cloneSection(preset));
-  }
-
-  return output;
+  return shaditzIncoming.map(cloneSection);
 }
