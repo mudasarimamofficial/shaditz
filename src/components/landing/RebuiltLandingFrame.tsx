@@ -78,6 +78,7 @@ export function RebuiltLandingFrame({
   function q(sel){ return document.querySelector(sel); }
   function qa(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
   function text(v){ return typeof v === "string" ? v : ""; }
+  function bool(v){ return v === true; }
   function arr(v){ return Array.isArray(v) ? v : []; }
   function esc(v){
     return String(v == null ? "" : v)
@@ -89,6 +90,35 @@ export function RebuiltLandingFrame({
   function setText(el, value){ if(el) el.textContent = text(value); }
   function setTitle(el, value){ if(el) el.innerHTML = esc(text(value)).replace(/\\n/g, "<br>"); }
   function setHref(el, href){ if(el && text(href)) el.setAttribute("href", text(href)); }
+  function setTargetBlank(el, enabled){
+    if(!el) return;
+    if(enabled) el.setAttribute("target", "_blank");
+    else el.removeAttribute("target");
+  }
+  function ensureHref(el, href){
+    if(!el) return;
+    if(text(href)) el.setAttribute("href", text(href));
+    else el.removeAttribute("href");
+  }
+  function setButtonLabelKeepingIcon(el, label){
+    if(!el) return;
+    var svg = el.querySelector ? el.querySelector("svg") : null;
+    if(svg){
+      el.innerHTML = svg.outerHTML + " " + esc(text(label));
+    } else {
+      setText(el, label);
+    }
+  }
+  function waDigits(value){
+    return text(value).replace(/[^0-9]/g, "");
+  }
+  function buildWaHref(number, message){
+    var digits = waDigits(number);
+    if(!digits) return "";
+    var msg = text(message || "").trim();
+    var base = "https://wa.me/" + digits;
+    return msg ? (base + "?text=" + encodeURIComponent(msg)) : base;
+  }
   function sectionByType(content, type){
     var sections = content && content.page && Array.isArray(content.page.sections) ? content.page.sections : [];
     for(var i=0;i<sections.length;i++){ if(sections[i] && sections[i].type === type) return sections[i]; }
@@ -180,7 +210,7 @@ export function RebuiltLandingFrame({
     var cta = q(".nav-wa");
     if(cta && data.nav && data.nav.cta){
       setText(cta, data.nav.cta.label || data.nav.cta.text);
-      setHref(cta, data.nav.cta.href);
+      ensureHref(cta, data.nav.cta.href);
     }
   }
   function renderHero(data){
@@ -236,7 +266,7 @@ export function RebuiltLandingFrame({
     setTitle(q("#work .s-title"), sec.title);
     var root = q("#work .work-grid");
     if(!root) return;
-    root.innerHTML = arr(sec.items).map(function(item){
+    root.innerHTML = arr(sec.items).map(function(item, idx){
       var media = item.image && item.image.url
         ? '<img class="wi-img" src="' + esc(item.image.url) + '" alt="' + esc(item.title) + '">'
         : '<div class="wi-placeholder wp' + esc(String((idx%5)+1)) + '"><span class="wp-icon">' + esc(item.icon || "🎬") + "</span></div>";
@@ -354,13 +384,55 @@ export function RebuiltLandingFrame({
   }
   function renderWhatsapp(data){
     var wa = data.whatsapp || {};
-    var number = text(wa.number || "92XXXXXXXXXX").replace(/[^0-9]/g, "");
+    var enabled = wa.enabled !== false;
+    var href = enabled ? buildWaHref(wa.number, wa.message || "Hi Shaditz! I want to discuss a project.") : "";
+    var openBlank = wa.openInNewTab !== false;
+
+    var floatWrap = q(".wa-float");
+    if(floatWrap) floatWrap.style.display = enabled && href ? "" : "none";
+
     var bubble = q(".wa-bubble");
     if(bubble) setText(bubble, wa.bubbleText || "Chat on WhatsApp");
-    var links = qa(".wa-btn, .nav-wa, .wa-contact-btn");
-    links.forEach(function(link){
-      setHref(link, "https://wa.me/" + number + "?text=" + encodeURIComponent(wa.message || "Hi Shaditz! I want to discuss a project."));
-    });
+
+    var nav = q(".nav-wa");
+    if(nav){
+      nav.style.display = enabled && href ? "" : "none";
+      if(enabled && wa.navLabel) setText(nav, wa.navLabel);
+      ensureHref(nav, href);
+      setTargetBlank(nav, openBlank);
+    }
+
+    var floatBtn = q(".wa-btn");
+    if(floatBtn){
+      ensureHref(floatBtn, href);
+      setTargetBlank(floatBtn, openBlank);
+    }
+
+    var heroBtn = q(".hero-cta-row .btn-ghost");
+    if(heroBtn){
+      heroBtn.style.display = enabled && href ? "" : "none";
+      if(enabled && wa.heroLabel) setText(heroBtn, wa.heroLabel);
+      ensureHref(heroBtn, href);
+      setTargetBlank(heroBtn, openBlank);
+    }
+
+    var contactBtn = q(".wa-contact-btn");
+    if(contactBtn){
+      contactBtn.style.display = enabled && href ? "" : "none";
+      if(enabled && wa.contactLabel) setButtonLabelKeepingIcon(contactBtn, wa.contactLabel);
+      ensureHref(contactBtn, href);
+      setTargetBlank(contactBtn, openBlank);
+    }
+
+    var contactValueLink = q("#contact .contact-info-items .ci-item:nth-child(2) .ci-val a");
+    if(contactValueLink){
+      contactValueLink.style.display = enabled && href ? "" : "none";
+      ensureHref(contactValueLink, buildWaHref(wa.number, ""));
+      setTargetBlank(contactValueLink, openBlank);
+      if(enabled && waDigits(wa.number)){
+        contactValueLink.textContent = "+" + waDigits(wa.number);
+      }
+    }
   }
   function applyOrderAndVisibility(content){
     var page = content && content.page ? content.page : {};

@@ -10,9 +10,14 @@ export type ShaditzMedia = {
 
 export type ShaditzLandingContent = {
   whatsapp?: {
+    enabled?: boolean;
     number?: string;
     message?: string;
     bubbleText?: string;
+    navLabel?: string;
+    contactLabel?: string;
+    heroLabel?: string;
+    openInNewTab?: boolean;
   };
   marqueeItems?: string[];
   nav: {
@@ -138,9 +143,14 @@ export type ShaditzLandingContent = {
 
 export const shaditzLandingDefaults: ShaditzLandingContent = {
   whatsapp: {
-    number: "92XXXXXXXXXX",
+    enabled: true,
+    number: "",
     message: "Hi Shaditz! I want to discuss a project.",
     bubbleText: "Chat on WhatsApp",
+    navLabel: "📲 WhatsApp",
+    contactLabel: "Chat on WhatsApp",
+    heroLabel: "💬 WhatsApp Me",
+    openInNewTab: true,
   },
   marqueeItems: [
     "Video Editing",
@@ -160,7 +170,7 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
       { label: "Reviews", href: "#reviews" },
       { label: "Contact", href: "#contact" },
     ],
-    cta: { label: "📲 WhatsApp", href: "https://wa.me/92XXXXXXXXXX" },
+    cta: { label: "📲 WhatsApp", href: "" },
   },
   hero: {
     eyebrow: "✦ Freelance Cinematic Editor — Available Worldwide",
@@ -168,7 +178,7 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     titleHighlight: "DITZ",
     subtitle: "I don't just edit videos — I craft visual experiences that move people.",
     primaryCta: { label: "View My Work", href: "#work" },
-    secondaryCta: { label: "💬 WhatsApp Me", href: "https://wa.me/92XXXXXXXXXX" },
+    secondaryCta: { label: "💬 WhatsApp Me", href: "" },
     stats: [
       { value: "50+", label: "Projects" },
       { value: "25+", label: "Clients" },

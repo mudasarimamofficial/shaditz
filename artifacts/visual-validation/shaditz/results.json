@@ -1,0 +1,134 @@
+{
+  "widths": [
+    1440,
+    1280,
+    768,
+    375,
+    320
+  ],
+  "height": 900,
+  "targets": [
+    {
+      "key": "raw",
+      "label": "Raw HTML",
+      "url": "file:///C:/Users/mudas/Desktop/Coach%20Flow%20Development/shaditz/public/shaditz-rebuilt-1.html"
+    },
+    {
+      "key": "local",
+      "label": "Local app",
+      "url": "http://localhost:3000/"
+    },
+    {
+      "key": "prod",
+      "label": "Production",
+      "url": "https://shaditz.vercel.app/"
+    }
+  ],
+  "results": [
+    {
+      "target": "raw",
+      "width": 1440,
+      "ok": true,
+      "ms": 5699,
+      "screenshot": "artifacts/visual-validation/shaditz/raw-1440.png"
+    },
+    {
+      "target": "raw",
+      "width": 1280,
+      "ok": true,
+      "ms": 5027,
+      "screenshot": "artifacts/visual-validation/shaditz/raw-1280.png"
+    },
+    {
+      "target": "raw",
+      "width": 768,
+      "ok": true,
+      "ms": 4566,
+      "screenshot": "artifacts/visual-validation/shaditz/raw-768.png"
+    },
+    {
+      "target": "raw",
+      "width": 375,
+      "ok": true,
+      "ms": 3832,
+      "screenshot": "artifacts/visual-validation/shaditz/raw-375.png"
+    },
+    {
+      "target": "raw",
+      "width": 320,
+      "ok": true,
+      "ms": 3741,
+      "screenshot": "artifacts/visual-validation/shaditz/raw-320.png"
+    },
+    {
+      "target": "local",
+      "width": 1440,
+      "ok": true,
+      "ms": 4869,
+      "screenshot": "artifacts/visual-validation/shaditz/local-1440.png"
+    },
+    {
+      "target": "local",
+      "width": 1280,
+      "ok": true,
+      "ms": 4583,
+      "screenshot": "artifacts/visual-validation/shaditz/local-1280.png"
+    },
+    {
+      "target": "local",
+      "width": 768,
+      "ok": true,
+      "ms": 4869,
+      "screenshot": "artifacts/visual-validation/shaditz/local-768.png"
+    },
+    {
+      "target": "local",
+      "width": 375,
+      "ok": true,
+      "ms": 3976,
+      "screenshot": "artifacts/visual-validation/shaditz/local-375.png"
+    },
+    {
+      "target": "local",
+      "width": 320,
+      "ok": true,
+      "ms": 3718,
+      "screenshot": "artifacts/visual-validation/shaditz/local-320.png"
+    },
+    {
+      "target": "prod",
+      "width": 1440,
+      "ok": true,
+      "ms": 7008,
+      "screenshot": "artifacts/visual-validation/shaditz/prod-1440.png"
+    },
+    {
+      "target": "prod",
+      "width": 1280,
+      "ok": true,
+      "ms": 6220,
+      "screenshot": "artifacts/visual-validation/shaditz/prod-1280.png"
+    },
+    {
+      "target": "prod",
+      "width": 768,
+      "ok": true,
+      "ms": 5142,
+      "screenshot": "artifacts/visual-validation/shaditz/prod-768.png"
+    },
+    {
+      "target": "prod",
+      "width": 375,
+      "ok": true,
+      "ms": 4920,
+      "screenshot": "artifacts/visual-validation/shaditz/prod-375.png"
+    },
+    {
+      "target": "prod",
+      "width": 320,
+      "ok": true,
+      "ms": 4333,
+      "screenshot": "artifacts/visual-validation/shaditz/prod-320.png"
+    }
+  ]
+}

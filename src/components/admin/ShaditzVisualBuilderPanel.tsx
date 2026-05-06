@@ -171,7 +171,7 @@ function sectionSubtitle(content: HomepageContent, type: SectionType) {
   const data = content.shaditz || shaditzLandingDefaults;
   if (type === "loader") return "LOADING PORTFOLIO";
   if (type === "nav") return data.nav.logo;
-  if (type === "whatsapp") return data.whatsapp?.number || "";
+  if (type === "whatsapp") return data.whatsapp?.enabled === false ? "Disabled" : data.whatsapp?.number || "";
   if (type === "hero") return data.hero.subtitle;
   if (type === "marquee") return `${(data.marqueeItems || []).length} items`;
   if (type === "about") return data.about?.title || "";
@@ -427,6 +427,15 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
     const wa = shaditz.whatsapp || {};
     return (
       <PanelGroup title="WhatsApp">
+        <Select
+          label="Enabled"
+          value={wa.enabled === false ? "no" : "yes"}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), enabled: e.target.value === "yes" })}
+          options={[
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
+          ]}
+        />
         <Input
           label="Number (digits only)"
           value={wa.number || ""}
@@ -437,11 +446,35 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
           value={wa.bubbleText || ""}
           onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), bubbleText: e.target.value })}
         />
+        <Input
+          label="Nav label"
+          value={wa.navLabel || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), navLabel: e.target.value })}
+        />
+        <Input
+          label="Hero button label"
+          value={wa.heroLabel || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), heroLabel: e.target.value })}
+        />
+        <Input
+          label="Contact button label"
+          value={wa.contactLabel || ""}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), contactLabel: e.target.value })}
+        />
         <Textarea
           label="Prefill message"
           rows={2}
           value={wa.message || ""}
           onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), message: e.target.value })}
+        />
+        <Select
+          label="Open in new tab"
+          value={wa.openInNewTab === false ? "no" : "yes"}
+          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), openInNewTab: e.target.value === "yes" })}
+          options={[
+            { value: "yes", label: "Yes" },
+            { value: "no", label: "No" },
+          ]}
         />
       </PanelGroup>
     );
@@ -575,14 +608,10 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
         <PanelGroup title="CTA">
           <Input
             label="Text"
-            value={shaditz.nav.cta.label}
-            onChange={(e) => updateShaditz("nav", { ...shaditz.nav, cta: { ...shaditz.nav.cta, label: e.target.value } })}
+            value={shaditz.whatsapp?.navLabel || shaditz.nav.cta.label}
+            onChange={(e) => updateShaditz("whatsapp", { ...(shaditz.whatsapp || {}), navLabel: e.target.value })}
           />
-          <Input
-            label="Href"
-            value={shaditz.nav.cta.href}
-            onChange={(e) => updateShaditz("nav", { ...shaditz.nav, cta: { ...shaditz.nav.cta, href: e.target.value } })}
-          />
+          <div className="text-xs text-white/55">Href is auto-generated from WhatsApp settings.</div>
         </PanelGroup>
       </>
     );
@@ -601,8 +630,12 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
         <PanelGroup title="Buttons">
           <Input label="Primary text" value={shaditz.hero.primaryCta.label} onChange={(e) => updateShaditz("hero", { ...shaditz.hero, primaryCta: { ...shaditz.hero.primaryCta, label: e.target.value } })} />
           <Input label="Primary href" value={shaditz.hero.primaryCta.href} onChange={(e) => updateShaditz("hero", { ...shaditz.hero, primaryCta: { ...shaditz.hero.primaryCta, href: e.target.value } })} />
-          <Input label="Secondary text" value={shaditz.hero.secondaryCta.label} onChange={(e) => updateShaditz("hero", { ...shaditz.hero, secondaryCta: { ...shaditz.hero.secondaryCta, label: e.target.value } })} />
-          <Input label="Secondary href" value={shaditz.hero.secondaryCta.href} onChange={(e) => updateShaditz("hero", { ...shaditz.hero, secondaryCta: { ...shaditz.hero.secondaryCta, href: e.target.value } })} />
+          <Input
+            label="Secondary (WhatsApp) text"
+            value={shaditz.whatsapp?.heroLabel || shaditz.hero.secondaryCta.label}
+            onChange={(e) => updateShaditz("whatsapp", { ...(shaditz.whatsapp || {}), heroLabel: e.target.value })}
+          />
+          <div className="text-xs text-white/55">Secondary button href is auto-generated from WhatsApp settings.</div>
         </PanelGroup>
         <PanelGroup title="Stats">
           {shaditz.hero.stats.map((stat, index) => (
