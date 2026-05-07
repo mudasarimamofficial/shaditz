@@ -130,7 +130,7 @@ export function RebuiltLandingFrame({
       nav: "nav",
       whatsapp: ".wa-float",
       hero: "#home",
-      marquee: "#marquee",
+      marquee: "#marquee, .marquee-section",
       about: "#about",
       showreel: "#reel",
       services: "#services",
@@ -138,7 +138,7 @@ export function RebuiltLandingFrame({
       process: "#process",
       reviews: "#reviews",
       testimonials: "#reviews",
-      tools: "#tools",
+      tools: "#tools, .tools-section",
       contact: "#contact",
       footer: "footer"
     }[type] || "";
@@ -281,8 +281,12 @@ export function RebuiltLandingFrame({
   }
   function renderTools(data){
     var sec = data.tools || {};
-    setText(q("#tools .s-label"), sec.label);
-    var root = q("#tools .tools-row");
+    var toolsRoot = q("#tools, .tools-section");
+    if(toolsRoot){
+      var lbl = toolsRoot.querySelector(".s-label");
+      if(lbl) setText(lbl, sec.label);
+    }
+    var root = toolsRoot ? toolsRoot.querySelector(".tools-row") : null;
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
       return '<div class="tool-item"><span class="tool-icon2">' + esc(item.icon) + '</span><span class="tool-name2">' + esc(item.name) + "</span></div>";
@@ -355,7 +359,8 @@ export function RebuiltLandingFrame({
     }
   }
   function renderMarquee(data){
-    var root = q("#marquee .marquee-track");
+    var marqueeRoot = q("#marquee, .marquee-section");
+    var root = marqueeRoot ? marqueeRoot.querySelector(".marquee-track") : null;
     if(!root || !Array.isArray(data.marqueeItems)) return;
     var items = data.marqueeItems;
     root.innerHTML = items.concat(items).map(function(item){

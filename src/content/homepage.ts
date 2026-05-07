@@ -139,13 +139,18 @@ export type HomepageContent = {
     sections: {
       id: string;
       type:
-        | "hero"
+        | "loader"
         | "nav"
+        | "whatsapp"
+        | "hero"
+        | "marquee"
+        | "about"
         | "showreel"
         | "services"
         | "portfolio"
-        | "tools"
         | "process"
+        | "reviews"
+        | "tools"
         | "contact"
         | "trust_strip"
         | "founder"
@@ -462,15 +467,18 @@ export const homepageDefaults: HomepageContent = {
   rebuilt: undefined,
   page: {
     sections: [
+      { id: "loader", type: "loader", enabled: true },
       { id: "nav", type: "nav", enabled: true },
+      { id: "whatsapp", type: "whatsapp", enabled: false },
       { id: "hero", type: "hero", enabled: true },
+      { id: "marquee", type: "marquee", enabled: true },
+      { id: "about", type: "about", enabled: true },
       { id: "showreel", type: "showreel", enabled: true },
-      { id: "services", type: "services", enabled: true },
       { id: "portfolio", type: "portfolio", enabled: true },
-      { id: "tools", type: "tools", enabled: true },
+      { id: "services", type: "services", enabled: true },
       { id: "process", type: "process", enabled: true },
-      { id: "testimonials", type: "testimonials", enabled: true },
-      { id: "pricing", type: "pricing", enabled: true },
+      { id: "reviews", type: "reviews", enabled: true },
+      { id: "tools", type: "tools", enabled: true },
       { id: "contact", type: "contact", enabled: true },
       { id: "footer", type: "footer", enabled: true },
     ],

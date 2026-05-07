@@ -47,6 +47,7 @@ for (const { a, b } of pairs) {
 
     const width = Math.min(img1.width, img2.width);
     const height = Math.min(img1.height, img2.height);
+    console.log(w, "a:", a, img1.width, img1.height, "b:", b, img2.width, img2.height);
 
     const aCropped = new PNG({ width, height });
     const bCropped = new PNG({ width, height });
