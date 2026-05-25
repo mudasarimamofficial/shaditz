@@ -314,8 +314,40 @@ Live (manual):
   - `shaditzLanding.ts` mixed-Urdu showreel note → English.
   - Lead delete: `DELETE /api/admin/leads/[id]` (single), `DELETE /api/admin/leads` (bulk by `ids[]`), `LeadsPanel` checkboxes + row trash + bulk delete with confirm.
   - `supabase/migrations/019_seed_shaditz_portfolio.sql`: destructive `do update set content=excluded.content` paths changed to `do nothing` — re-running the seed can no longer wipe live content.
-- **Open follow-ups (not done this session):**
-  - Live admin smoke test (create draft → publish → realtime → revert) requires a browser session with admin credentials.
-  - Move `SettingsPanel` theme save through the versioned `/api/admin/homepage` path so theme changes get version snapshots.
+- **Live admin browser smoke test (2026-05-25, driven via Claude in Chrome MCP, all 14 steps):**
+  1. **Login** → PASS (signed in as `mudasarimamofficial@gmail.com`).
+  2. **Open Builder** → PASS (Builder tab + section list + inspector loaded).
+  3. **Tiny harmless draft change** → PASS (Hero `Scroll text`: `Scroll Down` → `Scroll Down ·`).
+  4. **Save Draft** → PASS (green "Draft saved" banner).
+  5. **Publish** → PASS (green "Published live" banner).
+  6. **Confirm live homepage updates** → PASS (`grep -c 'Scroll Down ·' /` → 2 matches in served HTML).
+  7. **Revert original** → PASS (changed back to `Scroll Down`, Save Draft + Publish).
+  8. **Confirm live restored** → PASS (`grep -c 'Scroll Down ·' /` → 0 matches; original `Scroll Down` present).
+  9. **WhatsApp disable / enable / change number** → PASS:
+     - Set number `923000000999` → publish → live JSON payload contains `"number":"923000000999"`.
+     - Disable (Enabled → No) → publish → live JSON payload contains `"enabled":false`.
+     - Re-enable + clear number to original empty → publish → live JSON payload `{"number":"","enabled":true,...}` matches pre-test state. Zero residual occurrences of `923000000999` in live HTML.
+  10. **Settings save non-destructive** → PASS (MD5 of `shaditz` content section identical before/after Settings → Save).
+  11. **JSON editor save non-destructive** → PASS (MD5 of `shaditz` content section identical before/after JSON → Save).
+  12. **Lead delete (single + bulk)** → PASS:
+     - Created 3 test leads via `POST /api/leads` (SmokeTest One/Two/Three) → appeared in admin after Refresh.
+     - Single delete via per-row trash icon on SmokeTest Three → row vanished instantly (no reload).
+     - Bulk delete: select-all checkbox → "Delete 8" button appeared → click → all 8 leads removed (3 mine + 5 prior-session test leads + 1 prior `Live Validation`), table shows "No leads yet."
+  13. **Media upload / list / delete** → PASS:
+     - List: 2 pre-existing assets visible in `assets/media/` prefix.
+     - Upload: posted 70-byte test PNG to `/api/admin/media` → 201 Created → asset at `smoketest/1779724420314-smoketest-pixel.png` → public URL returned HTTP 200, content-type `image/png`.
+     - Delete: posted to `DELETE /api/admin/media` with the path → 200 with removed metadata → follow-up GET on the public URL returns non-200 (asset gone).
+  14. **No test data remains** → PASS:
+     - Leads table = empty (all 9 test/automation leads deleted; user can re-verify in Admin → Leads).
+     - Smoke test media (`smoketest/1779724420314-smoketest-pixel.png`) deleted.
+     - Floating WhatsApp config restored to pre-test state (`number: ""`, `enabled: true`).
+     - Hero `Scroll text` restored to `Scroll Down`.
+     - **Note:** 2 pre-existing media assets remain in the `media/` prefix (a `ssstik.io...mp4` download and a `chatgpt-image-may-...webp`). They predate this session and may or may not be intentional — not touched. Delete from Admin → Media if you want a fully empty bucket.
+  15. **`/api/health` matches latest SHA** → PASS (local HEAD = production `VERCEL_GIT_COMMIT_SHA` = `a6086b23271b9b7ae0e12917ffdc6fc17e23b4c4` at verification time; will advance by one doc-only commit after this bible stamp lands and Vercel redeploys — see convention note at the top of this section).
+  16. **Project Bible stamped with smoke result** → this section.
+
+- **Open follow-ups (genuine, not blocking handover):**
+  - Move `SettingsPanel` theme save through the versioned `/api/admin/homepage` path so theme changes get version snapshots (today's smoke confirmed it's non-destructive, but it still bypasses version history).
   - Consider replacing the in-memory `rateLimit.ts` with an Edge Config / Redis-backed limiter once traffic grows.
   - Visual baseline (`artifacts/visual-validation/**`) is dirty in the working tree from a prior session — not committed this session; consider gitignoring this folder, or refreshing the baselines after intentional UI changes.
+  - The `+923191106310` placeholder still sits in the legacy `content.whatsapp.phone` field in Supabase (the canonical floating-widget schema, separate from the cinematic-template `content.shaditz.whatsapp` that the admin Builder edits). It is rendered nowhere live because `content.whatsapp.enabled = false`. Either clear it via Admin → JSON, or leave as a documented harmless artifact.
