@@ -1,9 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { Lead } from "@/components/admin/types";
 import { LeadDetails } from "@/components/admin/LeadDetails";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, Trash2 } from "lucide-react";
 
 type Props = {
   leads: Lead[];
@@ -17,6 +17,7 @@ type Props = {
   onSelect: (id: string | null) => void;
   onRefresh: () => Promise<void>;
   onUpdateStatus: (id: string, status: Lead["status"]) => Promise<void>;
+  onDelete: (ids: string[]) => Promise<void>;
 };
 
 function formatDate(iso: string) {
@@ -37,11 +38,40 @@ export function LeadsPanel({
   onSelect,
   onRefresh,
   onUpdateStatus,
+  onDelete,
 }: Props) {
+  const [checked, setChecked] = useState<Set<string>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+
   const selected = useMemo(
     () => leads.find((l) => l.id === selectedId) || null,
     [leads, selectedId],
   );
+
+  const toggleOne = (id: string) =>
+    setChecked((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const handleDelete = async (ids: string[]) => {
+    if (!ids.length) return;
+    const msg = ids.length === 1 ? "Delete this lead permanently?" : `Delete ${ids.length} leads permanently?`;
+    if (typeof window !== "undefined" && !window.confirm(msg)) return;
+    setDeleting(true);
+    try {
+      await onDelete(ids);
+      setChecked((prev) => {
+        const next = new Set(prev);
+        for (const id of ids) next.delete(id);
+        return next;
+      });
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -61,6 +91,18 @@ export function LeadsPanel({
       );
     });
   }, [leads, query, datePreset]);
+
+  const filteredIds = useMemo(() => filtered.map((l) => l.id), [filtered]);
+  const allChecked = filteredIds.length > 0 && filteredIds.every((id) => checked.has(id));
+  const someChecked = filteredIds.some((id) => checked.has(id));
+  const selectedCount = filteredIds.filter((id) => checked.has(id)).length;
+  const toggleAll = () =>
+    setChecked((prev) => {
+      const next = new Set(prev);
+      if (allChecked) for (const id of filteredIds) next.delete(id);
+      else for (const id of filteredIds) next.add(id);
+      return next;
+    });
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pb-8 lg:px-6">
@@ -96,6 +138,17 @@ export function LeadsPanel({
             <RefreshCw className="mr-2 h-4 w-4" />
             Refresh
           </Button>
+          {selectedCount > 0 ? (
+            <Button
+              variant="secondary"
+              className="h-12 border-rose-500/40 bg-rose-500/10 text-rose-100 hover:bg-rose-500/20"
+              onClick={() => handleDelete(filteredIds.filter((id) => checked.has(id)))}
+              disabled={deleting}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Delete {selectedCount}
+            </Button>
+          ) : null}
         </div>
       </div>
 
@@ -111,11 +164,24 @@ export function LeadsPanel({
             <table className="min-w-full text-left text-sm">
               <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wide text-white/50">
                 <tr>
+                  <th className="w-10 px-3 py-3">
+                    <input
+                      type="checkbox"
+                      checked={allChecked}
+                      ref={(el) => {
+                        if (el) el.indeterminate = !allChecked && someChecked;
+                      }}
+                      onChange={toggleAll}
+                      aria-label="Select all"
+                      className="h-4 w-4 cursor-pointer accent-[#0fa3a3]"
+                    />
+                  </th>
                   <th className="px-4 py-3">Name</th>
                   <th className="px-4 py-3">Email</th>
                   <th className="px-4 py-3">Phone</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Date</th>
+                  <th className="w-10 px-3 py-3"></th>
                 </tr>
               </thead>
               <tbody>
@@ -128,6 +194,15 @@ export function LeadsPanel({
                         : "hover:bg-slate-50 dark:hover:bg-white/5"
                     }
                   >
+                    <td className="px-3 py-3">
+                      <input
+                        type="checkbox"
+                        checked={checked.has(l.id)}
+                        onChange={() => toggleOne(l.id)}
+                        aria-label={`Select ${l.name}`}
+                        className="h-4 w-4 cursor-pointer accent-[#0fa3a3]"
+                      />
+                    </td>
                     <td className="px-4 py-3">
                       <button
                         type="button"
@@ -162,12 +237,24 @@ export function LeadsPanel({
                     <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                       {formatDate(l.created_at)}
                     </td>
+                    <td className="px-3 py-3">
+                      <button
+                        type="button"
+                        onClick={() => handleDelete([l.id])}
+                        disabled={deleting}
+                        aria-label={`Delete ${l.name}`}
+                        title="Delete lead"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/0 text-white/50 transition hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-200 disabled:opacity-50"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
                 {!leadsLoading && filtered.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={5}
+                      colSpan={7}
                       className="px-4 py-10 text-center text-sm text-slate-500 dark:text-slate-400"
                     >
                       No leads yet.

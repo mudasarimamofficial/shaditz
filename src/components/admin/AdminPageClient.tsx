@@ -315,6 +315,35 @@ export function AdminPageClient({ initialTab = "builder" }: Props) {
               prev.map((l) => (l.id === id ? { ...l, status } : l)),
             );
           }}
+          onDelete={async (ids) => {
+            if (!ids.length) return;
+            const { data: sessionData } = await supabase.auth.getSession();
+            const token = sessionData.session?.access_token || "";
+            if (!token) {
+              setLeadsError("You must be signed in as admin.");
+              return;
+            }
+            try {
+              const res = await fetch("/api/admin/leads", {
+                method: "DELETE",
+                headers: {
+                  "content-type": "application/json",
+                  authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ ids }),
+              });
+              const json = (await res.json()) as { ok: boolean; message?: string; removed?: string[] };
+              if (!res.ok || !json.ok) {
+                setLeadsError(json.message || "Failed to delete lead(s)");
+                return;
+              }
+              const removed = new Set(json.removed || ids);
+              setLeads((prev) => prev.filter((l) => !removed.has(l.id)));
+              setSelectedId((prev) => (prev && removed.has(prev) ? null : prev));
+            } catch (e) {
+              setLeadsError(e instanceof Error ? e.message : "Failed to delete lead(s)");
+            }
+          }}
         />
       ) : tab === "media" ? (
         <MediaPanel supabase={supabase} />

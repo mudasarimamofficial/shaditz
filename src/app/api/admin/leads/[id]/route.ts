@@ -53,3 +53,19 @@ export async function PATCH(req: Request, { params }: Props) {
   if (!data) return NextResponse.json({ ok: false, message: "Lead not found" }, { status: 404 });
   return NextResponse.json({ ok: true, lead: data }, { status: 200 });
 }
+
+export async function DELETE(req: Request, { params }: Props) {
+  const gate = await requireAdmin(req);
+  if (!gate.ok) return adminJsonError(gate);
+  const { id } = await params;
+
+  const { data, error } = await gate.supabase
+    .from("leads")
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
+  if (error) return NextResponse.json({ ok: false, message: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ ok: false, message: "Lead not found" }, { status: 404 });
+  return NextResponse.json({ ok: true, id: data.id }, { status: 200 });
+}

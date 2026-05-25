@@ -1201,7 +1201,7 @@ export function HomepagePanel({ supabase }: Props) {
                   },
                 }))
               }
-              placeholder="Hamza"
+              placeholder="Your first name"
             />
             <Input
               label="Last name placeholder"

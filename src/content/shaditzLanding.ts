@@ -203,7 +203,7 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     title: "SHOWREEL\n2024",
     videoUrl: "",
     placeholderText: "PLAY SHOWREEL",
-    note: "📌 Apna YouTube ya Vimeo link yahan paste karo — iframe se replace karo upar wala div",
+    note: "Add your YouTube or Vimeo embed URL in the admin builder to replace this placeholder.",
   },
   services: {
     label: "What I Do",

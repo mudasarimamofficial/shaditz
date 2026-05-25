@@ -530,11 +530,15 @@ values (1, '{
     "headerColorHex": "#25D366"
   }
 }'::jsonb)
-on conflict (id) do update set content = excluded.content, updated_at = now();
+on conflict (id) do nothing;
+-- ^ Insert-if-missing only. NEVER overwrite live homepage content on a re-run.
+--   To restore the seed content intentionally, use Admin > JSON or restore a snapshot
+--   from homepage_content_versions. See docs/PROJECT_BIBLE.md §14.
 
 insert into public.homepage_content_drafts (id, content, published_updated_at)
 values (1, '{}'::jsonb, null)
-on conflict (id) do update set content = '{}'::jsonb, published_updated_at = null, updated_at = now();
+on conflict (id) do nothing;
+-- ^ Insert-if-missing only. Re-running must not clobber an in-flight draft.
 
 insert into public.site_pages (slug, title, nav_label, show_in_header_nav, show_in_footer_nav, status, meta_title, meta_description, draft_content, published_content, published_at)
 values
@@ -613,17 +617,8 @@ values
     }
   ]
 }'::jsonb, now())
-on conflict (slug) do update set
-  title = excluded.title,
-  nav_label = excluded.nav_label,
-  show_in_header_nav = excluded.show_in_header_nav,
-  show_in_footer_nav = excluded.show_in_footer_nav,
-  status = excluded.status,
-  meta_title = excluded.meta_title,
-  meta_description = excluded.meta_description,
-  draft_content = excluded.draft_content,
-  published_content = excluded.published_content,
-  published_at = excluded.published_at,
-  updated_at = now();
+on conflict (slug) do nothing;
+-- ^ Insert-if-missing only. Re-running must not overwrite live page content/metadata
+--   that the admin may have edited. To reset a page intentionally, use Admin > Pages.
 
 notify pgrst, 'reload schema';

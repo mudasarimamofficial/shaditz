@@ -128,7 +128,7 @@ export function TestimonialsSection({ section }: Props) {
         name: isRealTestimonial ? asString((content as any).name) || "Shaditz client" : fallbackProofTitle(index),
         role:
           isRealTestimonial
-            ? asString((content as any).role || (content as any).title) || "High-ticket coaching business"
+            ? asString((content as any).role || (content as any).title) || "Shaditz client"
             : "System proof point",
         body: (safeBody || "").trim().length ? safeBody : fallbackProofBody(index),
         rating: asNumber(content.rating) || 5,

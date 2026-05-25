@@ -44,7 +44,7 @@ export function Hero({ content, section }: Props) {
   const proofTitle =
     proof?.title && !/trusted by\s+\d+\+?\s+coaches/i.test(proof.title)
       ? proof.title
-      : trustText || "Built for high-ticket coaching teams";
+      : trustText || "Polished delivery, every project";
   const proofEyebrow =
     proof?.eyebrow && !/averaging\s+\d+\+?\s+booked calls/i.test(proof.eyebrow)
       ? proof.eyebrow
