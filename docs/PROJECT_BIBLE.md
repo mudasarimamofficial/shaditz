@@ -291,8 +291,10 @@ Live (manual):
 ## 15. Production status
 
 > Update this section at the end of any session that ships.
+>
+> **Convention:** "Last verified SHA" records the most recent **runtime-affecting** commit that was verified end-to-end against live (`/api/health`, lint, build, endpoint smoke checks). Subsequent doc-only commits — including bible updates like this one — auto-deploy on Vercel as no-op deploys (no code change → identical runtime behavior). After any such doc commit, production `/api/health.VERCEL_GIT_COMMIT_SHA` will advance to the doc commit's SHA, but the bible's "last verified SHA" stays anchored to the last runtime-verified commit. This avoids an infinite chase where every bible update needs another bible update to record itself.
 
-- **Last verified SHA in production:** `7da6bae85a4e78938a9bb9a285c7475ee38d7c05`
+- **Last runtime-verified SHA:** `a3d0515c40edf29f516a54001e386dbd843f8a20`
 - **Last verified at:** 2026-05-25 (matched `/api/health.vercel.VERCEL_GIT_COMMIT_SHA`)
 - **Last validation (this session):**
   - `npm run lint` — clean.
