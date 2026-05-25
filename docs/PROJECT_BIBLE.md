@@ -292,9 +292,28 @@ Live (manual):
 
 > Update this section at the end of any session that ships.
 
-- **Last verified SHA in production:** _(updated at end of session — see git log)_
-- **Last validation:** _(updated at end of session)_
-- **Open follow-ups:**
-  - Live admin smoke test (create draft → publish → realtime → revert) requires a browser session with admin credentials; do this after any admin-API change.
+- **Last verified SHA in production:** `7da6bae85a4e78938a9bb9a285c7475ee38d7c05`
+- **Last verified at:** 2026-05-25 (matched `/api/health.vercel.VERCEL_GIT_COMMIT_SHA`)
+- **Last validation (this session):**
+  - `npm run lint` — clean.
+  - `npx tsc --noEmit` — clean.
+  - `npm run build` — clean (Next.js 16.2.4 / Turbopack).
+  - `GET /` → 200.
+  - `GET /admin` → 200 (login screen for signed-out).
+  - `GET /api/admin/leads` (no auth) → 401 `{ok:false, message:"Missing auth token"}`.
+  - `DELETE /api/admin/leads` (no auth) → 401 (new endpoint also gated).
+  - `GET /api/health` → 200, `missingRequired: []`, SHA matches.
+- **What shipped this session:**
+  - `docs/PROJECT_BIBLE.md` created.
+  - CoachFlow-bleed copy wiped from `src/content/homepage.ts` defaults; DB content untouched.
+  - Hardcoded placeholder WhatsApp number removed from defaults.
+  - `Hero.tsx` / `TestimonialsSection.tsx` neutral fallback strings.
+  - `HomepagePanel.tsx` placeholder `"Hamza"` → `"Your first name"`.
+  - `shaditzLanding.ts` mixed-Urdu showreel note → English.
+  - Lead delete: `DELETE /api/admin/leads/[id]` (single), `DELETE /api/admin/leads` (bulk by `ids[]`), `LeadsPanel` checkboxes + row trash + bulk delete with confirm.
+  - `supabase/migrations/019_seed_shaditz_portfolio.sql`: destructive `do update set content=excluded.content` paths changed to `do nothing` — re-running the seed can no longer wipe live content.
+- **Open follow-ups (not done this session):**
+  - Live admin smoke test (create draft → publish → realtime → revert) requires a browser session with admin credentials.
   - Move `SettingsPanel` theme save through the versioned `/api/admin/homepage` path so theme changes get version snapshots.
   - Consider replacing the in-memory `rateLimit.ts` with an Edge Config / Redis-backed limiter once traffic grows.
+  - Visual baseline (`artifacts/visual-validation/**`) is dirty in the working tree from a prior session — not committed this session; consider gitignoring this folder, or refreshing the baselines after intentional UI changes.
