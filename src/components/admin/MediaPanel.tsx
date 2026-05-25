@@ -181,7 +181,7 @@ export function MediaPanel({ supabase }: Props) {
       {notice ? <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">{notice}</div> : null}
 
       <div className="grid gap-4 rounded-2xl border border-white/10 bg-white/5 p-4 lg:grid-cols-[240px_1fr]">
-        <div className="flex flex-col gap-3">
+        <div className="flex w-full flex-col gap-3">
           <div className="rounded-xl border border-white/10 bg-black/20 px-3 py-2 text-xs text-white/70">
             Bucket: <span className="font-semibold text-white">assets</span>
           </div>

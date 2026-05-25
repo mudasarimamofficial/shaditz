@@ -160,7 +160,7 @@ export function LeadsPanel({
 
       <div className="grid flex-1 grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr]">
         <div className="overflow-hidden rounded-2xl border border-white/10 bg-white/5">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full">
             <table className="min-w-full text-left text-sm">
               <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wide text-white/50">
                 <tr>

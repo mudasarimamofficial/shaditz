@@ -13,7 +13,7 @@ function digitsOnly(v: string) {
 }
 
 export function WhatsAppWidget({ content }: Props) {
-  const cfg = content.whatsapp;
+  const cfg: any = content.shaditz?.whatsapp || content.whatsapp;
   const [open, setOpen] = useState(false);
   const [visible, setVisible] = useState(false);
   const [suppressedOnTinyTop, setSuppressedOnTinyTop] = useState(false);

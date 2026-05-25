@@ -425,26 +425,37 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
 
   function renderWhatsappInspector() {
     const wa = shaditz.whatsapp || {};
+    const topWa: any = content.whatsapp || {
+      enabled: false,
+      phone: "",
+      message: "",
+      tooltip: "Chat with us!",
+      modalTitle: "Shaditz",
+      modalSubtitle: "Usually replies instantly",
+      buttonText: "Start Chat"
+    };
     return (
       <PanelGroup title="WhatsApp">
         <Select
           label="Enabled"
           value={wa.enabled === false ? "no" : "yes"}
-          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), enabled: e.target.value === "yes" })}
+          onChange={(e) => {
+            const enabled = e.target.value === "yes";
+            updateShaditz("whatsapp", { ...(wa || {}), enabled });
+            updateContent({ ...content, whatsapp: { ...topWa, enabled } });
+          }}
           options={[
             { value: "yes", label: "Yes" },
             { value: "no", label: "No" },
           ]}
         />
         <Input
-          label="Number (digits only)"
-          value={wa.number || ""}
-          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), number: e.target.value })}
-        />
-        <Input
-          label="Bubble text"
-          value={wa.bubbleText || ""}
-          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), bubbleText: e.target.value })}
+          label="Phone Number"
+          value={topWa.phone || wa.number || ""}
+          onChange={(e) => {
+            updateShaditz("whatsapp", { ...(wa || {}), number: e.target.value });
+            updateContent({ ...content, whatsapp: { ...topWa, phone: e.target.value } });
+          }}
         />
         <Input
           label="Nav label"
@@ -464,8 +475,37 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
         <Textarea
           label="Prefill message"
           rows={2}
-          value={wa.message || ""}
-          onChange={(e) => updateShaditz("whatsapp", { ...(wa || {}), message: e.target.value })}
+          value={topWa.message || wa.message || ""}
+          onChange={(e) => {
+            updateShaditz("whatsapp", { ...(wa || {}), message: e.target.value });
+            updateContent({ ...content, whatsapp: { ...topWa, message: e.target.value } });
+          }}
+        />
+        <div className="mt-4 text-xs font-semibold text-white/50 uppercase tracking-widest">Floating Widget Settings</div>
+        <Input
+          label="Tooltip text"
+          value={topWa.tooltip || ""}
+          onChange={(e) => updateContent({ ...content, whatsapp: { ...topWa, tooltip: e.target.value } })}
+        />
+        <Input
+          label="Modal title"
+          value={topWa.modalTitle || ""}
+          onChange={(e) => updateContent({ ...content, whatsapp: { ...topWa, modalTitle: e.target.value } })}
+        />
+        <Input
+          label="Modal subtitle"
+          value={topWa.modalSubtitle || ""}
+          onChange={(e) => updateContent({ ...content, whatsapp: { ...topWa, modalSubtitle: e.target.value } })}
+        />
+        <Input
+          label="Button text"
+          value={topWa.buttonText || ""}
+          onChange={(e) => updateContent({ ...content, whatsapp: { ...topWa, buttonText: e.target.value } })}
+        />
+        <Input
+          label="Header hex color"
+          value={topWa.headerColorHex || "#25D366"}
+          onChange={(e) => updateContent({ ...content, whatsapp: { ...topWa, headerColorHex: e.target.value } })}
         />
         <Select
           label="Open in new tab"

@@ -142,7 +142,7 @@ export function SettingsPanel({ supabase }: Props) {
       ) : null}
 
       <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-        <div className="flex flex-col gap-4">
+        <div className="flex w-full flex-col gap-4">
           <Input
             label="Admin notification email"
             value={adminEmail}
@@ -489,12 +489,16 @@ export function SettingsPanel({ supabase }: Props) {
                       },
                     },
                   };
-                  const { error: updateHomeErr } = await supabase
-                    .from("homepage_content")
-                    .update({ content: updated })
-                    .eq("id", 1);
-                  if (updateHomeErr) {
-                    setSettingsError(updateHomeErr.message);
+                  const { data: sessionData } = await supabase.auth.getSession();
+                  const token = sessionData.session?.access_token || "";
+                  const res = await fetch("/api/admin/homepage", {
+                    method: "POST",
+                    headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ action: "publish", content: updated }),
+                  });
+                  if (!res.ok) {
+                    const errJson = await res.json().catch(() => ({}));
+                    setSettingsError(errJson.message || "Failed to save settings");
                     return;
                   }
                   await requestAdminRevalidate(supabase, ["/"]);

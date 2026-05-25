@@ -351,3 +351,29 @@ Live (manual):
   - Consider replacing the in-memory `rateLimit.ts` with an Edge Config / Redis-backed limiter once traffic grows.
   - Visual baseline (`artifacts/visual-validation/**`) is dirty in the working tree from a prior session — not committed this session; consider gitignoring this folder, or refreshing the baselines after intentional UI changes.
   - The `+923191106310` placeholder still sits in the legacy `content.whatsapp.phone` field in Supabase (the canonical floating-widget schema, separate from the cinematic-template `content.shaditz.whatsapp` that the admin Builder edits). It is rendered nowhere live because `content.whatsapp.enabled = false`. Either clear it via Admin → JSON, or leave as a documented harmless artifact.
+
+## Final Production Hardening Audit (2026-05-25)
+
+The final hardening sprint executed the following critical steps to ensure Shaditz is fully professional, Shopify-like, and client-ready:
+
+1. **WhatsApp Widget Architecture:**
+   - Removed the duplicate hardcoded `.wa-float` HTML generation from `public/shaditz-rebuilt-1.html` and `RebuiltLandingFrame.tsx`.
+   - Updated `WhatsAppWidget.tsx` to read natively from `content.shaditz.whatsapp || content.whatsapp` so that the premium Coachflow-style widget works cleanly across both rendering paths.
+   - Updated `ShaditzVisualBuilderPanel.tsx` to safely sync `whatsapp` config edits directly into the global `content.whatsapp` node without overriding `content.shaditz`.
+
+2. **Emoji to Premium SVG Icon Replacement:**
+   - Emojis in public UI (e.g. `🎬`, `✨`, `📱`) were replaced with premium `lucide-react` SVG equivalents via `getSvgForIcon` in the `RebuiltLandingFrame.tsx`.
+   - `src/content/shaditzLanding.ts` defaults were updated to use standard identifiers (e.g., `video`, `sparkles`, `smartphone`) instead of emoji literals.
+
+3. **Builder Arrays 'Add Item' Actions:**
+   - `<Button>` components to "Add Service", "Add Project", "Add Tool", "Add Step", "Add Testimonial", and "Add Contact Info" were successfully wired into `src/components/admin/ShaditzVisualBuilderPanel.tsx`.
+
+4. **Persistence & Safety:**
+   - Refactored `SettingsPanel.tsx` (the "Save" function) to use the `/api/admin/homepage` endpoint correctly via POST `action: publish`. This ensures that global theme and configuration updates correctly create a version snapshot instead of blindly overwriting `homepage_content` directly, preventing catastrophic unversioned saves.
+
+5. **Responsive Admin Layouts:**
+   - Applied `<div className="overflow-x-auto w-full">` and similar constraints to tables and grid areas in `LeadsPanel.tsx`, `SettingsPanel.tsx`, and `MediaPanel.tsx` to ensure proper layout down to smaller viewports.
+
+### Final Verification Results:
+- **Build / Lint / Typecheck:** Passed cleanly locally.
+- **Data Persistence:** Preserved properly.
