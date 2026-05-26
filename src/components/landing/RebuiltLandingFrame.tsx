@@ -467,18 +467,25 @@ export function RebuiltLandingFrame({
 
   function iconHtml(iconName){
     var key = String(iconName || "").trim().toLowerCase();
-    if (key === "🎬" || key === "video" || key === "film") key = "film";
+    if (key === "🎬" || key === "🎞️" || key === "video" || key === "film") key = "film";
     if (key === "✨" || key === "sparkles") key = "sparkles";
     if (key === "🚀" || key === "send") key = "send";
-    if (key === "💎" || key === "palette") key = "palette";
-    if (key === "🔥" || key === "volume") key = "volume";
+    if (key === "💎" || key === "🎨" || key === "palette") key = "palette";
+    if (key === "🔥" || key === "🔊" || key === "volume") key = "volume";
     if (key === "⭐" || key === "star") key = "star";
     if (key === "✅" || key === "check") key = "star";
     if (key === "📲" || key === "whatsapp" || key === "phone") key = "whatsapp";
-    if (key === "💬" || key === "chat" || key === "mail") key = "mail";
-    if (key === "📌" || key === "map" || key === "map-pin") key = "map";
+    if (key === "💬" || key === "chat" || key === "mail" || key === "📧") key = "mail";
+    if (key === "📌" || key === "📍" || key === "map" || key === "map-pin") key = "map";
     if (key === "📤" || key === "share" || key === "upload") key = "send";
     if (key === "📋" || key === "notion" || key === "file") key = "file";
+    if (key === "📐" || key === "pen") key = "pen";
+    if (key === "🎵" || key === "music") key = "music";
+    if (key === "💼" || key === "briefcase") key = "briefcase";
+    if (key === "⏰" || key === "clock") key = "clock";
+    if (key === "🏢" || key === "building") key = "building";
+    if (key === "📱" || key === "smartphone") key = "smartphone";
+    if (key === "👤" || key === "user") key = "user";
     
     if(key && lucideToSvg[key]) return lucideToSvg[key];
     if (/[^\x00-\x7F]+/.test(iconName)) return iconName;
