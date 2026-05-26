@@ -488,7 +488,7 @@ export function RebuiltLandingFrame({
     if (key === "👤" || key === "user") key = "user";
     
     if(key && lucideToSvg[key]) return lucideToSvg[key];
-    if (/[^\x00-\x7F]+/.test(iconName)) return iconName;
+    if (/[^\\x00-\\x7F]+/.test(iconName)) return iconName;
     return lucideToSvg['star'] || "";
   }
 
