@@ -757,7 +757,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
               </Button>
             </div>
           ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("services", { ...shaditz.services, items: [...shaditz.services.items, { icon: "🎬", number: String(shaditz.services.items.length + 1).padStart(2, "0"), title: "New Service", description: "", tags: [] }] })}>
+          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("services", { ...shaditz.services, items: [...shaditz.services.items, { icon: "video", number: String(shaditz.services.items.length + 1).padStart(2, "0"), title: "New Service", description: "", tags: [] }] })}>
             <Plus className="mr-2 h-4 w-4" />
             Add service
           </Button>
@@ -829,7 +829,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
               </InlineActions>
             </div>
           ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("portfolio", { ...shaditz.portfolio, items: [...shaditz.portfolio.items, { category: "New Category", title: "New Project", meta: "Project · 2026", icon: "🎬" }] })}>
+          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("portfolio", { ...shaditz.portfolio, items: [...shaditz.portfolio.items, { category: "New Category", title: "New Project", meta: "Project · 2026", icon: "video" }] })}>
             <Plus className="mr-2 h-4 w-4" />
             Add project
           </Button>
@@ -863,7 +863,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
               </button>
             </div>
           ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("tools", { ...shaditz.tools, items: [...shaditz.tools.items, { icon: "✨", name: "New Tool" }] })}>
+          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("tools", { ...shaditz.tools, items: [...shaditz.tools.items, { icon: "sparkles", name: "New Tool" }] })}>
             <Plus className="mr-2 h-4 w-4" />
             Add tool
           </Button>
@@ -957,7 +957,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
               </Button>
             </div>
           ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("testimonials", { ...shaditz.testimonials, items: [...shaditz.testimonials.items, { quote: "", author: "Client Name", role: "Role", avatar: "👤", stars: "★★★★★" }] })}>
+          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("testimonials", { ...shaditz.testimonials, items: [...shaditz.testimonials.items, { quote: "", author: "Client Name", role: "Role", avatar: "user", stars: "★★★★★" }] })}>
             <Plus className="mr-2 h-4 w-4" />
             Add quote
           </Button>
