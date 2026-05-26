@@ -269,7 +269,7 @@ export function RebuiltLandingFrame({
     root.innerHTML = arr(sec.items).map(function(item, idx){
       var media = item.image && item.image.url
         ? '<img class="wi-img" src="' + esc(item.image.url) + '" alt="' + esc(item.title) + '">'
-        : '<div class="wi-placeholder wp' + esc(String((idx%5)+1)) + '"><span class="wp-icon">' + esc(item.icon || "🎬") + "</span></div>";
+        : '<div class="wi-placeholder wp' + esc(String((idx%5)+1)) + '"><span class="wp-icon">' + iconHtml(item.icon || "film") + "</span></div>";
       var body = media +
         '<div class="wi-num">' + esc(item.number || String(idx + 1).padStart(2,"0")) + '</div>' +
         '<div class="wi-always"><div class="wi-always-cat">' + esc(item.category) + '</div><div class="wi-always-title">' + esc(item.title) + '</div></div>' +
@@ -289,7 +289,7 @@ export function RebuiltLandingFrame({
     var root = toolsRoot ? toolsRoot.querySelector(".tools-row") : null;
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
-      return '<div class="tool-item"><span class="tool-icon2">' + esc(item.icon) + '</span><span class="tool-name2">' + esc(item.name) + "</span></div>";
+      return '<div class="tool-item"><span class="tool-icon2">' + iconHtml(item.icon) + '</span><span class="tool-name2">' + esc(item.name) + "</span></div>";
     }).join("");
   }
   function renderProcess(data){
@@ -309,7 +309,7 @@ export function RebuiltLandingFrame({
     var root = q("#reviews .reviews-grid");
     if(!root) return;
     root.innerHTML = arr(sec.items).map(function(item){
-      return '<div class="review-card"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><p class="review-text">' + esc(item.quote) + '</p><div class="review-author"><div class="reviewer-avatar">' + esc(item.avatar || "👤") + '</div><div><div class="reviewer-name">' + esc(item.author) + '</div><div class="reviewer-info">' + esc(item.role) + '</div><div class="review-platform">' + esc(item.platform || "") + "</div></div></div></div>";
+      return '<div class="review-card"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><p class="review-text">' + esc(item.quote) + '</p><div class="review-author"><div class="reviewer-avatar">' + iconHtml(item.avatar || "user") + '</div><div><div class="reviewer-name">' + esc(item.author) + '</div><div class="reviewer-info">' + esc(item.role) + '</div><div class="review-platform">' + esc(item.platform || "") + "</div></div></div></div>";
     }).join("");
   }
   function renderPricing(data){
@@ -334,7 +334,7 @@ export function RebuiltLandingFrame({
     if(infoRoot){
       infoRoot.innerHTML = arr(sec.info).map(function(item){
         var value = item.href ? '<a href="' + esc(item.href) + '">' + esc(item.value) + "</a>" : esc(item.value);
-        return '<div class="ci-item"><div class="ci-icon">' + esc(item.icon) + '</div><div><div class="ci-label">' + esc(item.label) + '</div><div class="ci-val">' + value + "</div></div></div>";
+        return '<div class="ci-item"><div class="ci-icon">' + iconHtml(item.icon) + '</div><div><div class="ci-label">' + esc(item.label) + '</div><div class="ci-val">' + value + "</div></div></div>";
       }).join("");
     }
     var fields = sec.fields || {};
@@ -400,8 +400,50 @@ export function RebuiltLandingFrame({
       ensureHref(nav, href);
       setTargetBlank(nav, openBlank);
     }
+
+    var heroBtn = q(".hero-cta-row .btn-ghost");
+    if(heroBtn){
+      heroBtn.style.display = enabled && href ? "" : "none";
+      if(enabled && wa.heroLabel) setText(heroBtn, wa.heroLabel);
+      ensureHref(heroBtn, href);
+      setTargetBlank(heroBtn, openBlank);
+    }
+
+    var contactBtn = q(".wa-contact-btn");
+    if(contactBtn){
+      contactBtn.style.display = enabled && href ? "" : "none";
+      if(enabled && wa.contactLabel) {
+        var svg = contactBtn.querySelector("svg");
+        if(svg){
+          contactBtn.innerHTML = svg.outerHTML + " " + esc(wa.contactLabel);
+        } else {
+          setText(contactBtn, wa.contactLabel);
+        }
+      }
+      ensureHref(contactBtn, href);
+      setTargetBlank(contactBtn, openBlank);
+    }
+
+    var infoItems = qa(".ci-item");
+    infoItems.forEach(function(item){
+      var label = item.querySelector(".ci-label");
+      if(label && text(label.textContent).trim().toLowerCase() === "whatsapp"){
+        var valA = item.querySelector(".ci-val a");
+        if(valA){
+          valA.style.display = enabled && href ? "" : "none";
+          ensureHref(valA, href);
+          setTargetBlank(valA, openBlank);
+          var formattedNumber = text(wa.number).trim();
+          if(formattedNumber){
+            setText(valA, "+" + formattedNumber);
+          } else {
+            setText(valA, "Chat on WhatsApp");
+          }
+        }
+      }
+    });
   }
-  const lucideToSvg: Record<string, string> = {
+  var lucideToSvg = {
     video: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-video"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>',
     sparkles: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sparkles"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>',
     music: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-music"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
@@ -418,13 +460,29 @@ export function RebuiltLandingFrame({
     user: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
     star: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
     send: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-send"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>',
-    file: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>'
+    file: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>',
+    whatsapp: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+    globe: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-globe"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg>'
   };
 
-  function getSvgForIcon(iconName: string) {
-    if (lucideToSvg[iconName]) return lucideToSvg[iconName];
-    if (/[^ -]+/.test(iconName)) return iconName;
-    return lucideToSvg['star'] || iconName;
+  function iconHtml(iconName){
+    var key = String(iconName || "").trim().toLowerCase();
+    if (key === "🎬" || key === "video" || key === "film") key = "film";
+    if (key === "✨" || key === "sparkles") key = "sparkles";
+    if (key === "🚀" || key === "send") key = "send";
+    if (key === "💎" || key === "palette") key = "palette";
+    if (key === "🔥" || key === "volume") key = "volume";
+    if (key === "⭐" || key === "star") key = "star";
+    if (key === "✅" || key === "check") key = "star";
+    if (key === "📲" || key === "whatsapp" || key === "phone") key = "whatsapp";
+    if (key === "💬" || key === "chat" || key === "mail") key = "mail";
+    if (key === "📌" || key === "map" || key === "map-pin") key = "map";
+    if (key === "📤" || key === "share" || key === "upload") key = "send";
+    if (key === "📋" || key === "notion" || key === "file") key = "file";
+    
+    if(key && lucideToSvg[key]) return lucideToSvg[key];
+    if (/[^\x00-\x7F]+/.test(iconName)) return iconName;
+    return lucideToSvg['star'] || "";
   }
 
   function applyOrderAndVisibility(content){
