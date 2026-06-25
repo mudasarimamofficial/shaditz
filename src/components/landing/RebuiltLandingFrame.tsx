@@ -386,6 +386,14 @@ export function RebuiltLandingFrame({
     if(avail && sec.availabilityText){
       avail.innerHTML = '<span class="avail-dot"></span>' + esc(sec.availabilityText);
     }
+    var imgWrap = q("#about .about-img-wrap");
+    if(imgWrap){
+      if(sec.image && sec.image.url){
+        imgWrap.innerHTML = '<img class="about-img" src="' + esc(sec.image.url) + '" alt="Profile" />';
+      } else {
+        imgWrap.innerHTML = '<div class="about-img-placeholder"><div class="about-avatar-icon">👤</div></div>';
+      }
+    }
   }
   function renderWhatsapp(data){
     var wa = data.whatsapp || {};

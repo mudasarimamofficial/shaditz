@@ -587,6 +587,33 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
             }
           />
         </PanelGroup>
+        <PanelGroup title="Profile Image">
+          <Input
+            label="Image URL"
+            value={about.image?.url || ""}
+            onChange={(e) => updateShaditz("about", { ...about, image: e.target.value ? { url: e.target.value } : undefined })}
+            placeholder="https://..."
+          />
+          <InlineActions>
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-10"
+              onClick={() => openMedia("Pick profile image", (asset) => updateShaditz("about", { ...about, image: asset }))}
+            >
+              <ImageIcon className="mr-2 h-4 w-4" />
+              Pick image
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="h-10"
+              onClick={() => updateShaditz("about", { ...about, image: undefined })}
+            >
+              Clear
+            </Button>
+          </InlineActions>
+        </PanelGroup>
       </>
     );
   }

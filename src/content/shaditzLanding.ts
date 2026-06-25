@@ -42,6 +42,7 @@ export type ShaditzLandingContent = {
     paragraphs?: string[];
     skills?: string[];
     availabilityText?: string;
+    image?: ShaditzMedia;
   };
   showreel: {
     label: string;
