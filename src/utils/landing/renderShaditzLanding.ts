@@ -311,10 +311,41 @@ export function renderShaditzLanding(templateHtml: string, content: HomepageCont
     const root = q("#reviews .reviews-grid") as any;
     if (!root) return;
     root.innerHTML = arr(sec.items)
-      .map(
-        (item: any) =>
-          '<div class="review-card"><div class="review-stars"><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div><div class="star"></div></div><p class="review-text">' + esc(item.quote) + '</p><div class="review-author"><div class="reviewer-avatar">' + iconHtml(item.avatar || "user") + '</div><div><div class="reviewer-name">' + esc(item.author) + '</div><div class="reviewer-info">' + esc(item.role) + '</div><div class="review-platform">' + esc(item.platform || "") + "</div></div></div></div>",
-      )
+      .map((item: any) => {
+        let starsHtml = "";
+        const numStars = Math.min(5, Math.max(1, parseInt(item.stars) || 5));
+        for (let i = 0; i < 5; i++) {
+          if (i < numStars) {
+            starsHtml += '<svg class="star-icon filled" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+          } else {
+            starsHtml += '<svg class="star-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" opacity="0.3"/></svg>';
+          }
+        }
+        let avatarHtml = '';
+        if (item.avatar) {
+          avatarHtml = '<img src="' + esc(item.avatar) + '" alt="' + esc(item.author) + '" class="reviewer-img">';
+        } else {
+          avatarHtml = '<div class="reviewer-icon">' + iconHtml("user") + '</div>';
+        }
+        
+        let tagsHtml = '';
+        if (item.duration) tagsHtml += '<span class="review-tag">' + iconHtml("clock") + ' ' + esc(item.duration) + '</span>';
+        if (item.country) tagsHtml += '<span class="review-tag">' + iconHtml("map") + ' ' + esc(item.country) + '</span>';
+        if (item.platform) tagsHtml += '<span class="review-tag">' + iconHtml("briefcase") + ' ' + esc(item.platform) + '</span>';
+        
+        return '<div class="review-card">' +
+                 '<div class="review-card-top">' +
+                   '<div class="reviewer-avatar-wrap">' + avatarHtml + '</div>' +
+                   '<div class="reviewer-meta">' +
+                     '<div class="reviewer-name">' + esc(item.author) + '</div>' +
+                     '<div class="reviewer-role">' + esc(item.role) + '</div>' +
+                   '</div>' +
+                 '</div>' +
+                 '<div class="review-stars">' + starsHtml + '</div>' +
+                 '<p class="review-text">"' + esc(item.quote) + '"</p>' +
+                 (tagsHtml ? '<div class="review-tags">' + tagsHtml + '</div>' : '') +
+               '</div>';
+      })
       .join("");
   };
   const renderContact = (data: any) => {

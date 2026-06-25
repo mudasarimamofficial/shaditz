@@ -92,9 +92,11 @@ export type ShaditzLandingContent = {
     items: {
       quote: string;
       author: string;
-      role: string;
+      country: string;
+      role?: string;
       avatar: string;
-      stars: string;
+      stars: number;
+      duration: string;
     }[];
   };
   pricing: {
@@ -192,12 +194,13 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     label: "About Me",
     title: "THE\nEDITOR\nBEHIND\nTHE LENS",
     paragraphs: [
-      "I'm Shaditz — a freelance video editor based in Pakistan, working with international clients across YouTube, Instagram, and brand campaigns.",
-      "With 3+ years of experience in Premiere Pro & After Effects, I turn raw footage into stories that hook viewers, build brands, and drive real results.",
-      "Every frame matters. Every cut is intentional. Every project is treated like a cinematic masterpiece.",
+      "I'm Shaditz — a freelance video editor based in Pakistan, providing professional video editing services using Adobe Premiere Pro & After Effects.",
+      "From YouTube videos, TikToks, Instagram Reels, Shorts, and fundraising campaigns to corporate projects and cinematic edits, I deliver high-quality, engaging content that brings your vision to life.",
+      "Fluent in English, Hindi, French, and Hebrew. Available at an hourly rate of $10/hr.",
     ],
-    skills: ["Premiere Pro", "After Effects", "DaVinci Resolve", "Color Grading", "Motion Design", "Sound Design", "Reels / Shorts", "Brand Films"],
+    skills: ["Real Estate expert", "Editor", "Instagram content creator", "Social media branding expert", "Short film editor", "Adobe Premiere Pro expert", "YouTube video editor", "Graphic designer"],
     availabilityText: "Available for new projects",
+    image: { url: "https://fiverr-res.cloudinary.com/image/upload/f_auto,q_auto,t_profile_original/v1/attachments/profile/photo/e67ad75fad4b878f7540da1f0d450143-1724158558972/7ba22e19-db6d-493d-8683-c8c05ef0b388.jpg" }
   },
   showreel: {
     label: "Watch",
@@ -341,24 +344,30 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     items: [
       {
         quote: "Shaher Yar delivered exactly what I envisioned. His attention to detail and quick turnaround made the whole process seamless.",
-        author: "Client Name Here",
-        role: "CEO, Company Name",
-        avatar: "user",
-        stars: "★★★★★",
+        author: "ewoffindin44",
+        country: "United States",
+        role: "Content Creator",
+        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/dd908294b527e6e7bde13557c6e7052c-1702067980380/b2ff5541-be28-4926-b019-a53495605360.jpg",
+        stars: 5,
+        duration: "1 week ago"
       },
       {
         quote: "The motion graphics work was outstanding. Our brand video got incredible engagement. Will definitely work together again!",
-        author: "Client Name Here",
-        role: "Content Creator",
-        avatar: "user",
-        stars: "★★★★★",
+        author: "kelseyhepples",
+        country: "United Kingdom",
+        role: "Brand Manager",
+        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/f8f6a41ad1ef1c8cac408b8c80b79435-1776680003581/8fe167a7-70d5-4ded-b882-1007d3ec3944.JPG",
+        stars: 5,
+        duration: "2 weeks ago"
       },
       {
         quote: "Professional, creative, and responsive. The reels he edited consistently hit 100k+ views. Highly recommend!",
-        author: "Client Name Here",
-        role: "Brand Manager",
-        avatar: "user",
-        stars: "★★★★★",
+        author: "cutaboveedits",
+        country: "Australia",
+        role: "Agency Owner",
+        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/b778f0075d24e06bc013e5e37a6d8258-1675574930448/3ebb4d5f-029d-4b72-a49c-42dfe8d393f3.jpg",
+        stars: 5,
+        duration: "1 month ago"
       },
     ],
   },

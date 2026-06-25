@@ -968,14 +968,26 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
                 }} />
               </div>
               <div className="grid grid-cols-2 gap-3">
+                <Input label="Country" value={item.country} onChange={(e) => {
+                  const items = [...shaditz.testimonials.items];
+                  items[index] = { ...item, country: e.target.value };
+                  updateShaditz("testimonials", { ...shaditz.testimonials, items });
+                }} />
+                <Input label="Duration/Date" value={item.duration} onChange={(e) => {
+                  const items = [...shaditz.testimonials.items];
+                  items[index] = { ...item, duration: e.target.value };
+                  updateShaditz("testimonials", { ...shaditz.testimonials, items });
+                }} />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
                 <Input label="Avatar" value={item.avatar} onChange={(e) => {
                   const items = [...shaditz.testimonials.items];
                   items[index] = { ...item, avatar: e.target.value };
                   updateShaditz("testimonials", { ...shaditz.testimonials, items });
                 }} />
-                <Input label="Stars" value={item.stars} onChange={(e) => {
+                <Input type="number" label="Stars (1-5)" value={String(item.stars)} onChange={(e) => {
                   const items = [...shaditz.testimonials.items];
-                  items[index] = { ...item, stars: e.target.value };
+                  items[index] = { ...item, stars: Number(e.target.value) };
                   updateShaditz("testimonials", { ...shaditz.testimonials, items });
                 }} />
               </div>
@@ -984,7 +996,7 @@ export function ShaditzVisualBuilderPanel({ supabase, onNavigateTab, onSignOut }
               </Button>
             </div>
           ))}
-          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("testimonials", { ...shaditz.testimonials, items: [...shaditz.testimonials.items, { quote: "", author: "Client Name", role: "Role", avatar: "user", stars: "★★★★★" }] })}>
+          <Button type="button" variant="secondary" className="h-10" onClick={() => updateShaditz("testimonials", { ...shaditz.testimonials, items: [...shaditz.testimonials.items, { quote: "", author: "Client Name", country: "United States", role: "Role", avatar: "user", stars: 5, duration: "1 month ago" }] })}>
             <Plus className="mr-2 h-4 w-4" />
             Add quote
           </Button>
