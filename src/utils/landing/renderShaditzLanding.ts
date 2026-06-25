@@ -308,7 +308,7 @@ export function renderShaditzLanding(templateHtml: string, content: HomepageCont
     const sec = data.testimonials || data.reviews || {};
     setText(q("#reviews .s-label"), sec.label);
     setTitle(q("#reviews .s-title"), sec.title);
-    const root = q("#reviews .reviews-grid") as any;
+    const root = q("#reviews .reviews-marquee-track") as any;
     if (!root) return;
     root.innerHTML = arr(sec.items)
       .map((item: any) => {
@@ -347,6 +347,8 @@ export function renderShaditzLanding(templateHtml: string, content: HomepageCont
                '</div>';
       })
       .join("");
+    // duplicate for infinite marquee
+    root.innerHTML += root.innerHTML;
   };
   const renderContact = (data: any) => {
     const sec = data.contact || {};

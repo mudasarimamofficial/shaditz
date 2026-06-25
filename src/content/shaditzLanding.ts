@@ -97,6 +97,7 @@ export type ShaditzLandingContent = {
       avatar: string;
       stars: number;
       duration: string;
+      platform?: string;
     }[];
   };
   pricing: {
@@ -267,37 +268,64 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     label: "Selected Work",
     title: "PORTFOLIO",
     items: [
-      {
-        category: "Brand Film",
-        title: "Featured Project Title Here",
-        meta: "Brand Film · 2024",
-        icon: "video",
-        wide: true,
-      },
-      {
-        category: "Motion Graphics",
-        title: "Project Two",
-        meta: "Motion Graphics · 2024",
-        icon: "sparkles",
-      },
-      {
-        category: "Social Media",
-        title: "Project Three",
-        meta: "Reels · 2024",
-        icon: "smartphone",
-      },
-      {
-        category: "Color Grading",
-        title: "Project Four",
-        meta: "Color Grade · 2024",
-        icon: "palette",
-      },
-      {
-        category: "Corporate",
-        title: "Project Five",
-        meta: "Corporate · 2024",
-        icon: "building",
-      },
+
+        {
+                "category": "Video Editing",
+                "title": "I will do professional video editing for tiktok, reels and youtube shorts",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/so_13.582504,t_gig_cards_web/nre3aoooqhuzkzaagwek.png" }
+        },
+        {
+                "category": "Text Animation",
+                "title": "I will make eye catching text animation and kinetic typography",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/t_gig_cards_web/kygrp2iojlbrbogol02z.png" }
+        },
+        {
+                "category": "Video Editing",
+                "title": "I will do professional video editing for tiktok, reels and youtube shorts",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/f_auto,q_auto,t_portfolio_project_grid/v1/video-attachments/delivery/asset/f3df85130dec14af94d44cc760060459-1750248077/PAWS%20Shelter.png" }
+        },
+        {
+                "category": "Text Animation",
+                "title": "I will make eye catching text animation and kinetic typography",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/f_auto,q_auto,t_portfolio_project_grid/v1/video-attachments/delivery/asset/f9841e7d30f716dce7db35c0b9b539eb-1743797955/Video%20Alternative%20to%20Elevenlabs%20Luv%20voice_01.png" }
+        },
+        {
+                "category": "Video Editing",
+                "title": "I will do classic and professional video editing",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/so_13.582504,t_gig_cards_web/nre3aoooqhuzkzaagwek.png" }
+        },
+        {
+                "category": "Video Editing",
+                "title": "I will be your professional capcut pro editor for viral video editing",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/so_13.582504,t_gig_cards_web/nre3aoooqhuzkzaagwek.png" }
+        },
+        {
+                "category": "Subtitles",
+                "title": "I will add subtitles and translations in any language with perfect sync",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/so_13.582504,t_gig_cards_web/nre3aoooqhuzkzaagwek.png" }
+        },
+        {
+                "category": "Social Media Videos",
+                "title": "I will create powerful crowdfunding or fundraising videos that inspire action",
+                "meta": "2024",
+                "icon": "video",
+                "image": { "url": "https://fiverr-res.cloudinary.com/video/upload/so_13.582504,t_gig_cards_web/nre3aoooqhuzkzaagwek.png" }
+        }
+
     ],
   },
   tools: {
@@ -342,33 +370,398 @@ export const shaditzLandingDefaults: ShaditzLandingContent = {
     label: "Client Love",
     title: "WHAT CLIENTS\nSAY",
     items: [
-      {
-        quote: "Shaher Yar delivered exactly what I envisioned. His attention to detail and quick turnaround made the whole process seamless.",
-        author: "ewoffindin44",
-        country: "United States",
-        role: "Content Creator",
-        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/dd908294b527e6e7bde13557c6e7052c-1702067980380/b2ff5541-be28-4926-b019-a53495605360.jpg",
-        stars: 5,
-        duration: "1 week ago"
-      },
-      {
-        quote: "The motion graphics work was outstanding. Our brand video got incredible engagement. Will definitely work together again!",
-        author: "kelseyhepples",
-        country: "United Kingdom",
-        role: "Brand Manager",
-        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/f8f6a41ad1ef1c8cac408b8c80b79435-1776680003581/8fe167a7-70d5-4ded-b882-1007d3ec3944.JPG",
-        stars: 5,
-        duration: "2 weeks ago"
-      },
-      {
-        quote: "Professional, creative, and responsive. The reels he edited consistently hit 100k+ views. Highly recommend!",
-        author: "cutaboveedits",
-        country: "Australia",
-        role: "Agency Owner",
-        avatar: "https://fiverr-res.cloudinary.com/t_profile_thumb,q_auto,f_auto/attachments/profile/photo/b778f0075d24e06bc013e5e37a6d8258-1675574930448/3ebb4d5f-029d-4b72-a49c-42dfe8d393f3.jpg",
-        stars: 5,
-        duration: "1 month ago"
-      },
+
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Another amazing video, thanks again!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you so much 😊",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final video created very quickly as it was an urgent video",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you...",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy once again with the final video :)",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you so much again...",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy once again with the final delivery, great communication and great at implementing my changes. A+!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you so much...",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Excellent work",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Great work!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks you",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Great work",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Awesome work",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks 😊",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Beast mode!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks you 😊",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "thank you so much...",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "thank you 😊",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final videos, could not be happier! Thank-you!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you so much Emily.",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Quick delivery, very happy with the final video",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Would recommend!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the video! Thankyou!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks again...",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Loved working with Shaditz. He did exceptional work and went above and beyond with what we asked for. 10/10 would recommend. We will definitely be working with him in the future.",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very quick delivery and communication could not be happier!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Great and easy to work with. Was able to provide a quick delivery and also make the requested edits.",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final videos provided, thank-you!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you soo much....",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final piece!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks a lot... 😊",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thanks a lot... 👍",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Looks good!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very prompt but the quality just isn’t there",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Thank you for the feedback! I’m always open to suggestions and would be happy to improve the quality based on your preferences.",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Another great delivery by Shaditz. I've worked with him multiple times, and he consistently provides what I need. I've returned to him for several edits, and it's always easy to collaborate with him.",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final video. Quick communication and very open to the revisions I provided. A+ video support once again!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Amazing work as always, thanks so much!!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        },
+        {
+                "author": "Fiverr Client",
+                "role": "Client",
+                "quote": "Very happy with the final video - thanks so much!",
+                "avatar": "",
+                "country": "International",
+                "duration": "Recently",
+                "platform": "Fiverr",
+                "stars": 5
+        }
+
     ],
   },
   pricing: {
