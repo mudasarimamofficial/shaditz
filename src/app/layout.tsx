@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeScript } from "@/components/theme/ThemeScript";
 import { getHomepageContent } from "@/utils/homepageContent";
 import { buildThemeCssVars } from "@/utils/themeCss";
+import { buildStructuredData, resolveOgImage } from "@/utils/structuredData";
 
 const headingFont = Playfair_Display({
   subsets: ["latin"],
@@ -50,6 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const faviconHref =
     content.site?.favicon?.url ||
     "/favicon.png";
+  const ogImage = resolveOgImage(content);
 
   return {
     metadataBase: new URL("https://shaditz.vercel.app"),
@@ -66,11 +68,15 @@ export async function generateMetadata(): Promise<Metadata> {
       url: "https://shaditz.vercel.app",
       siteName: brand,
       type: "website",
+      ...(ogImage
+        ? { images: [{ url: ogImage, width: 1200, height: 630, alt: title }] }
+        : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
+      ...(ogImage ? { images: [ogImage] } : {}),
     },
   };
 }
@@ -82,6 +88,10 @@ export default async function RootLayout({
 }>) {
   const content = await getHomepageContent();
   const cssVars = buildThemeCssVars(content);
+  const structuredData = buildStructuredData(content);
+  const jsonLd = structuredData
+    ? JSON.stringify(structuredData).replace(/</g, "\\u003c")
+    : null;
   const faviconHref =
     content.site?.favicon?.url ||
     "/favicon.png";
@@ -132,6 +142,12 @@ export default async function RootLayout({
           rel="stylesheet"
         />
         <ThemeScript />
+        {jsonLd ? (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: jsonLd }}
+          />
+        ) : null}
       </head>
       <body className="min-h-full flex flex-col bg-[#080808] text-[var(--cf-text)]">
         {children}
