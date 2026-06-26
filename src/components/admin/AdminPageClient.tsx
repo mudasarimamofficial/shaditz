@@ -15,7 +15,10 @@ import { SettingsPanel } from "@/components/admin/SettingsPanel";
 import { PagesPanel } from "@/components/admin/pages/PagesPanel";
 import { MediaPanel } from "@/components/admin/MediaPanel";
 
-const BOOTSTRAP_ADMIN_EMAIL = "mudasarimamofficial@gmail.com";
+const BOOTSTRAP_ADMIN_EMAILS = [
+  "mudasarimamofficial@gmail.com",
+  "theshaheryarportfolio@gmail.com"
+];
 
 function normEmail(v: string | null | undefined) {
   return (v || "").trim().toLowerCase();
@@ -23,7 +26,7 @@ function normEmail(v: string | null | undefined) {
 
 function isBootstrapAdmin(v: string | null | undefined) {
   // Bootstrap gating is intentionally explicit until profiles/RLS admin roles are provisioned.
-  return normEmail(v) === BOOTSTRAP_ADMIN_EMAIL;
+  return BOOTSTRAP_ADMIN_EMAILS.includes(normEmail(v));
 }
 
 type Props = {
@@ -236,7 +239,7 @@ export function AdminPageClient({ initialTab = "builder" }: Props) {
           </div>
           <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200">
             <div>Signed in as: {sessionEmail || "Unknown"}</div>
-            <div>Allowed admin email: {BOOTSTRAP_ADMIN_EMAIL}</div>
+            <div>Allowed admin emails: {BOOTSTRAP_ADMIN_EMAILS.join(", ")}</div>
           </div>
           <div className="mt-4 flex items-center gap-3">
             <button

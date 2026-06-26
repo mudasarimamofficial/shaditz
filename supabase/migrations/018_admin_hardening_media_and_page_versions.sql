@@ -17,14 +17,14 @@ to authenticated
 using (
   bucket_id = 'assets'
   and (
-    coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+    coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
     or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
   )
 )
 with check (
   bucket_id = 'assets'
   and (
-    coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+    coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
     or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
   )
 );
@@ -48,7 +48,7 @@ on public.site_page_versions
 for select
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
 );
 
@@ -58,7 +58,7 @@ on public.site_page_versions
 for insert
 to authenticated
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
 );
 
@@ -72,7 +72,7 @@ for select
 to authenticated
 using (
   status = 'published'
-  or coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  or coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
 );
 
@@ -82,11 +82,11 @@ on public.site_pages
 for all
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
 )
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (select 1 from public.profiles p where p.id = auth.uid() and p.is_admin = true)
 );
 

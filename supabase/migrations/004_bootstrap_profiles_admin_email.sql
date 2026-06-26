@@ -47,7 +47,7 @@ on public.leads
 for select
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -61,7 +61,7 @@ on public.leads
 for update
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -69,7 +69,7 @@ using (
   )
 )
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -83,7 +83,7 @@ on public.settings
 for select
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -97,7 +97,7 @@ on public.settings
 for update
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -105,7 +105,7 @@ using (
   )
 )
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -119,7 +119,7 @@ on public.homepage_content
 for update
 to authenticated
 using (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -127,7 +127,7 @@ using (
   )
 )
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -141,7 +141,7 @@ on public.homepage_content
 for insert
 to authenticated
 with check (
-  coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+  coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
   or exists (
     select 1
     from public.profiles p
@@ -157,7 +157,7 @@ to authenticated
 using (
   bucket_id = 'homepage'
   and (
-    coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+    coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
     or exists (
       select 1
       from public.profiles p
@@ -168,7 +168,7 @@ using (
 with check (
   bucket_id = 'homepage'
   and (
-    coalesce(auth.jwt() ->> 'email', '') = 'mudasarimamofficial@gmail.com'
+    coalesce(auth.jwt() ->> 'email', '') in ('mudasarimamofficial@gmail.com', 'theshaheryarportfolio@gmail.com')
     or exists (
       select 1
       from public.profiles p

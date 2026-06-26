@@ -5,7 +5,7 @@ values ('assets', 'assets', true)
 on conflict (id) do update set public = true;
 
 insert into public.settings (id, admin_email)
-values (1, 'mudasarimamofficial@gmail.com')
+values (1, 'theshaheryarportfolio@gmail.com')
 on conflict (id) do update set admin_email = excluded.admin_email;
 
 insert into public.secret_settings (id)

@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import type { User } from "@supabase/supabase-js";
 import { createServiceSupabaseClient } from "@/utils/supabase/serviceClient";
 
-export const BOOTSTRAP_ADMIN_EMAIL = "mudasarimamofficial@gmail.com";
+export const BOOTSTRAP_ADMIN_EMAILS = [
+  "mudasarimamofficial@gmail.com",
+  "theshaheryarportfolio@gmail.com"
+];
 
 export type AdminGate =
   | { ok: true; user: User; supabase: ReturnType<typeof createServiceSupabaseClient> }
@@ -30,7 +33,7 @@ export async function requireAdmin(req: Request): Promise<AdminGate> {
   if (error || !data.user) return { ok: false, status: 401, message: "Invalid session" };
 
   const email = (data.user.email || "").trim().toLowerCase();
-  if (email === BOOTSTRAP_ADMIN_EMAIL) return { ok: true, user: data.user, supabase };
+  if (BOOTSTRAP_ADMIN_EMAILS.includes(email)) return { ok: true, user: data.user, supabase };
 
   const { data: profile } = await supabase
     .from("profiles")
